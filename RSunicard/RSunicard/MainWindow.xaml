@@ -5,8 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RSunicard"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="RSunicard" Height="600" Width="1000" ResizeMode="NoResize">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>            
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="LightGray">
+            <Label HorizontalAlignment="Center" VerticalAlignment="Bottom">MENU</Label>
+        </StackPanel>
+        <ListView Grid.Row="1" Grid.Column="0" x:Name="CompanyList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Nazwa" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
+                    <GridViewColumn Header="Lista pracowników" Width="120" DisplayMemberBinding="{Binding WorkersCount}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <ListView Grid.Row="1" Grid.Column="1" x:Name="EventsList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Data" Width="120" DisplayMemberBinding="{Binding EventDate}" />
+                    <GridViewColumn Header="Numer karty" Width="80" DisplayMemberBinding="{Binding CardID}" />
+                    <GridViewColumn Header="Pracownik" Width="120" DisplayMemberBinding="{Binding WorkerName}" />
+                    <GridViewColumn Header="Firma" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
+                    <GridViewColumn Header="Zdarzenie" Width="70" DisplayMemberBinding="{Binding EventType}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

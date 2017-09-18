@@ -1,0 +1,14 @@
+﻿using RSunicard.Enums;
+using System;
+
+namespace RSunicard.Models
+{
+    class EventVM
+    {
+        public string EventDate { get; set; }
+        public string WorkerName { get; set; }
+        public string CardID { get; set; }
+        public string CompanyName { get; set; }
+        public string EventType { get; set; }
+    }
+}
