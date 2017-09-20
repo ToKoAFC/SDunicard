@@ -1,7 +1,4 @@
-﻿using RSunicard.Enums;
-using System;
-
-namespace RSunicard.Models
+﻿namespace RSunicard.Models
 {
     class EventVM
     {
