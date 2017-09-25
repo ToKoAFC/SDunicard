@@ -11,11 +11,6 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="650"/>
-            <ColumnDefinition/>            
-        </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="LightGray">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"/>
@@ -26,25 +21,51 @@
             <Button x:Name="ManageTab" Grid.Column="1" Background="LightGray" Opacity="0.6" Click="ManageClick">Zarządzaj</Button>
             <Button x:Name="RaportsTab" Grid.Column="2" Background="LightGray" Opacity="0.6" Click="RaportsClick">Raporty</Button>
         </Grid>
-        
-        <ListView Grid.Row="1" Grid.Column="0" x:Name="CompanyList">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Nazwa" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
-                    <GridViewColumn Header="Lista pracowników" Width="120" DisplayMemberBinding="{Binding WorkersCount}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <ListView Grid.Row="1" Grid.Column="1" x:Name="EventsList">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Data" Width="120" DisplayMemberBinding="{Binding EventDate}" />
-                    <GridViewColumn Header="Numer karty" Width="80" DisplayMemberBinding="{Binding CardID}" />
-                    <GridViewColumn Header="Pracownik" Width="120" DisplayMemberBinding="{Binding WorkerName}" />
-                    <GridViewColumn Header="Firma" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
-                    <GridViewColumn Header="Zdarzenie" Width="70" DisplayMemberBinding="{Binding EventType}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <StackPanel x:Name="DashboardContent" Grid.Row="1" Visibility="Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ListView Grid.Column="0" x:Name="CompanyList">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Nazwa" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
+                            <GridViewColumn Header="Lista pracowników" Width="120" DisplayMemberBinding="{Binding WorkersCount}" />
+                        </GridView>
+                    </ListView.View>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_PreviewMouseLeftButtonDown" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+                <ListView Grid.Column="1" x:Name="EventsList">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Data" Width="120" DisplayMemberBinding="{Binding EventDate}" />
+                            <GridViewColumn Header="Numer karty" Width="80" DisplayMemberBinding="{Binding CardID}" />
+                            <GridViewColumn Header="Pracownik" Width="120" DisplayMemberBinding="{Binding WorkerName}" />
+                            <GridViewColumn Header="Firma" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
+                            <GridViewColumn Header="Zdarzenie" Width="70" DisplayMemberBinding="{Binding EventType}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel x:Name="ManageContent" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Margin="100,100" Height="100" BorderThickness="2" Click="AddNewCompanyClick">Dodaj firmę</Button>
+                <Button Grid.Column="1" Margin="100,100" Height="100" BorderThickness="2" Click="AddNewWorkerlick">Dodaj pracownika</Button>
+            </Grid>
+        </StackPanel>
+        <!--<StackPanel x:Name="ManageContent" Grid.Row="1">
+
+        </StackPanel>-->
     </Grid>
 </Window>

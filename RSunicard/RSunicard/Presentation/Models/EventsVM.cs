@@ -1,6 +1,8 @@
-﻿namespace RSunicard.Models
+﻿using System;
+
+namespace RSunicard.Models
 {
-    class EventVM
+    public class EventVM
     {
         public string EventDate { get; set; }
         public string WorkerName { get; set; }

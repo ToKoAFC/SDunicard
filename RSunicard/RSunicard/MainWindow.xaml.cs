@@ -28,99 +28,6 @@ namespace RSunicard
         public MainWindow()
         {
             InitializeComponent();
-            List<CompanyVM> items = new List<CompanyVM>();
-            items.Add(new CompanyVM() { CompanyName = "OPGK Rzeszów", WorkersCount = 42 });
-            items.Add(new CompanyVM() { CompanyName = "Assecco Poland", WorkersCount = 139 });
-            items.Add(new CompanyVM() { CompanyName = "PGS Software", WorkersCount = 97 });
-            CompanyList.ItemsSource = items;
-
-
-            List<EventVM> eventItems = new List<EventVM>();
-            eventItems.Add(new EventVM() { CompanyName = "OPGK Rzeszów", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Tomasz Krupa", CardID = "1011" });
-            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Robert Nowak", CardID = "1021" });
-            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Jan Kowalski", CardID = "1054" });
-            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Paweł Solny", CardID = "1045" });
-            eventItems.Add(new EventVM() { CompanyName = "Assecco Poland", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Aleksandra Nowicka", CardID = "1099" });
-            eventItems.Add(new EventVM() { CompanyName = "OPGK Rzeszów", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Marta Krupa", CardID = "1109" });
-
-            EventsList.ItemsSource = eventItems;
-
-
-            var data = new DBModel()
-            {
-                Companies = new List<DBCompany>()
-                {
-                    new DBCompany
-                    {
-                    CompanyId = 1,
-                    CompanyName = "OPGK Rzeszów",
-                    Workers = new List<DBWorker>()
-                    {
-                        new DBWorker
-                        {
-                            CardID = 1120,
-                            FirstName = "Tomek",
-                            SurName = "Krupa"
-                        },
-                        new DBWorker
-                        {
-                            CardID = 1410,
-                            FirstName = "Paweł",
-                            SurName = "Lsa"
-                        },
-                        new DBWorker
-                        {
-                            CardID = 1112,
-                            FirstName = "Kamil",
-                            SurName = "Osa"
-                        },
-                    }
-                },
-                new DBCompany
-                {
-                    CompanyId = 1,
-                    CompanyName = "Assecoo Polandw",
-                    Workers = new List<DBWorker>()
-                    {
-                        new DBWorker
-                        {
-                            CardID = 11620,
-                            FirstName = "Todasdamek",
-                            SurName = "Krudaspa"
-                        },
-                        new DBWorker
-                        {
-                            CardID = 1660,
-                            FirstName = "Pdasaweł",
-                            SurName = "dsaLsa"
-                        },
-                        new DBWorker
-                        {
-                            CardID = 16612,
-                            FirstName = "aaa",
-                            SurName = "Osdasa"
-                        },
-                    }
-                },
-                }
-            };
-
-            var db = Service.GetDBModel();
-            db.Companies.Add(new DBCompany()
-            {
-                CompanyId = 3,
-                CompanyName = "Nowa firma",
-                Workers = new List<DBWorker>()
-                {
-                    new DBWorker
-                    {
-                        CardID = 43,
-                        FirstName = "toemm",
-                        SurName = "fda"
-                    }
-                }
-            });
-            Service.SaveDatabase(db);
         }
 
         private void DashboardClick(object sender, RoutedEventArgs e)
@@ -131,6 +38,21 @@ namespace RSunicard
             ManageTab.Background = Brushes.LightGray;
             DashboardTab.Opacity = 1;
             DashboardTab.Background = Brushes.Gray;
+            DashboardContent.Visibility = Visibility.Visible;
+            ManageContent.Visibility = Visibility.Collapsed;
+            var dbModel = Service.GetDBModel();
+
+            //Company section
+            var companyItems = new List<CompanyVM>();
+            if (dbModel.Companies != null)
+            {
+                companyItems = dbModel.Companies.Select(x => new CompanyVM
+                {
+                    CompanyName = x.CompanyName,
+                    WorkersCount = x.Workers.Count
+                }).ToList();
+            }
+            CompanyList.ItemsSource = companyItems;
         }
 
         private void ManageClick(object sender, RoutedEventArgs e)
@@ -141,6 +63,9 @@ namespace RSunicard
             DashboardTab.Background = Brushes.LightGray;
             ManageTab.Opacity = 1;
             ManageTab.Background = Brushes.Gray;
+            DashboardContent.Visibility = Visibility.Collapsed;
+            ManageContent.Visibility = Visibility.Visible;
+            //companySelectList.ItemsSource = Service.GetCompanySelectList();
         }
 
         private void RaportsClick(object sender, RoutedEventArgs e)
@@ -151,6 +76,41 @@ namespace RSunicard
             ManageTab.Background = Brushes.LightGray;
             RaportsTab.Opacity = 1;
             RaportsTab.Background = Brushes.Gray;
+            DashboardContent.Visibility = Visibility.Collapsed;
+            ManageContent.Visibility = Visibility.Collapsed;
+        }
+
+        private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var eventItems = new List<EventVM>();
+            var item = sender as ListViewItem;
+            var company = item.Content as CompanyVM;
+            if (item == null || company == null)
+            {
+                return;
+            }
+            eventItems = Service.GetEvents(company.CompanyName);
+
+            eventItems.Add(new EventVM() { CompanyName = "OPGK Rzeszów", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Tomasz Krupa", CardID = "1011" });
+            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Robert Nowak", CardID = "1021" });
+            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Jan Kowalski", CardID = "1054" });
+            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Paweł Solny", CardID = "1045" });
+            eventItems.Add(new EventVM() { CompanyName = "Assecco Poland", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Aleksandra Nowicka", CardID = "1099" });
+            eventItems.Add(new EventVM() { CompanyName = "OPGK Rzeszów", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Marta Krupa", CardID = "1109" });
+
+            EventsList.ItemsSource = eventItems;
+        }
+
+        private void AddNewCompanyClick(object sender, RoutedEventArgs e)
+        {
+            AddCompany winAddCompany = new AddCompany();
+            winAddCompany.Show();
+        }
+
+        private void AddNewWorkerlick(object sender, RoutedEventArgs e)
+        {
+            AddWorker winAddNewWorker = new AddWorker();
+            winAddNewWorker.Show();
         }
         
     }
