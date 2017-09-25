@@ -122,5 +122,36 @@ namespace RSunicard
             });
             Service.SaveDatabase(db);
         }
+
+        private void DashboardClick(object sender, RoutedEventArgs e)
+        {
+            RaportsTab.Opacity = 0.6;
+            RaportsTab.Background = Brushes.LightGray;
+            ManageTab.Opacity = 0.6;
+            ManageTab.Background = Brushes.LightGray;
+            DashboardTab.Opacity = 1;
+            DashboardTab.Background = Brushes.Gray;
+        }
+
+        private void ManageClick(object sender, RoutedEventArgs e)
+        {
+            RaportsTab.Opacity = 0.6;
+            RaportsTab.Background = Brushes.LightGray;
+            DashboardTab.Opacity = 0.6;
+            DashboardTab.Background = Brushes.LightGray;
+            ManageTab.Opacity = 1;
+            ManageTab.Background = Brushes.Gray;
+        }
+
+        private void RaportsClick(object sender, RoutedEventArgs e)
+        {
+            DashboardTab.Opacity = 0.6;
+            DashboardTab.Background = Brushes.LightGray;
+            ManageTab.Opacity = 0.6;
+            ManageTab.Background = Brushes.LightGray;
+            RaportsTab.Opacity = 1;
+            RaportsTab.Background = Brushes.Gray;
+        }
+        
     }
 }

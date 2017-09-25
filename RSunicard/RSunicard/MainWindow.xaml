@@ -5,20 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RSunicard"
         mc:Ignorable="d"
-        Title="RSunicard" Height="600" Width="1000" ResizeMode="NoResize">
+        Title="RSunicard" Height="600" Width="900" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="650"/>
             <ColumnDefinition/>            
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="LightGray">
-            <Label HorizontalAlignment="Center" VerticalAlignment="Bottom">MENU</Label>
-        </StackPanel>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="LightGray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="DashboardTab" Grid.Column="0" Background="Gray" Click="DashboardClick">Podgląd</Button>
+            <Button x:Name="ManageTab" Grid.Column="1" Background="LightGray" Opacity="0.6" Click="ManageClick">Zarządzaj</Button>
+            <Button x:Name="RaportsTab" Grid.Column="2" Background="LightGray" Opacity="0.6" Click="RaportsClick">Raporty</Button>
+        </Grid>
+        
         <ListView Grid.Row="1" Grid.Column="0" x:Name="CompanyList">
             <ListView.View>
                 <GridView>

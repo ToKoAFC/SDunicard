@@ -67,6 +67,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Database\Models\DBModel.cs" />
+    <Compile Include="Database\Models\DBEvent.cs" />
     <Compile Include="Database\Models\DBWorker.cs" />
     <Compile Include="Database\Models\DBCompany.cs" />
     <Compile Include="Logic\Service.cs" />
