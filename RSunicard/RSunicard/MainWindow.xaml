@@ -9,6 +9,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="LightGray">
@@ -21,7 +22,19 @@
             <Button x:Name="ManageTab" Grid.Column="1" Background="LightGray" Opacity="0.6" Click="ManageClick">Zarządzaj</Button>
             <Button x:Name="RaportsTab" Grid.Column="2" Background="LightGray" Opacity="0.6" Click="RaportsClick">Raporty</Button>
         </Grid>
-        <StackPanel x:Name="DashboardContent" Grid.Row="1">
+
+        <Grid x:Name="warningGrid" Visibility="Collapsed" Background="LightYellow" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+            <Label x:Name="warningLabel" Grid.Column="0" FontSize="10"></Label>
+            <Button x:Name="connectButton" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Click="ConnectToCOMPortClick">Połącz</Button>
+        </Grid>
+        
+        <StackPanel x:Name="DashboardContent" Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
@@ -54,7 +67,7 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel x:Name="ManageContent" Grid.Row="1" Visibility="Collapsed">
+        <StackPanel x:Name="ManageContent" Grid.Row="2" Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>

@@ -15,6 +15,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Label Grid.Column="0" VerticalAlignment="Center">Imie i nazwisko:</Label>
         <TextBox x:Name="newWorkerName" Grid.Column="1" VerticalAlignment="Center"></TextBox>
@@ -28,6 +29,8 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <Button Grid.Row="2" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="AddNewWorkerlick">Dodaj pracownika</Button>
+        <Label Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">Card ID:</Label>
+        <TextBox x:Name="cardIDinput" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"></TextBox>        
+        <Button Grid.Row="3" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="AddNewWorkerlick">Dodaj pracownika</Button>
     </Grid>
 </Window>

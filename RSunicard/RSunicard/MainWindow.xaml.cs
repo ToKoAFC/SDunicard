@@ -17,6 +17,7 @@ using System.Web.Script.Serialization;
 using RSunicard.Database.Models;
 using Newtonsoft.Json;
 using RSunicard.Logic;
+using System.IO.Ports;
 
 namespace RSunicard
 {
@@ -25,10 +26,45 @@ namespace RSunicard
     /// </summary>
     public partial class MainWindow : Window
     {
+        public SerialPort sp = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
+
         public MainWindow()
         {
             InitializeComponent();
+            ConnectToCOM();
         }
+
+        private void ConnectToCOM()
+        {
+            try
+            {
+                sp.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+                sp.Open();
+                warningGrid.Visibility = Visibility.Collapsed;
+                connectButton.Visibility = Visibility.Collapsed;
+                warningLabel.Visibility = Visibility.Collapsed;
+            }
+            catch
+            {
+                warningGrid.Visibility = Visibility.Visible;
+                connectButton.Visibility = Visibility.Visible;
+                warningLabel.Visibility = Visibility.Visible;
+                warningGrid.Background = Brushes.LightPink;
+                warningLabel.Content = "Nie można połączyć się z portem szeregowym";
+            }
+        }
+        
+
+        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
+        {
+            var input = sp.ReadExisting();
+            var result = Service.ReceiveSerialPortSignal(input);
+            if (result)
+            {
+
+            }
+        }
+
 
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
@@ -90,14 +126,6 @@ namespace RSunicard
                 return;
             }
             eventItems = Service.GetEvents(company.CompanyName);
-
-            eventItems.Add(new EventVM() { CompanyName = "OPGK Rzeszów", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Tomasz Krupa", CardID = "1011" });
-            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Robert Nowak", CardID = "1021" });
-            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Jan Kowalski", CardID = "1054" });
-            eventItems.Add(new EventVM() { CompanyName = "PGS Software", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wyjscie", WorkerName = "Paweł Solny", CardID = "1045" });
-            eventItems.Add(new EventVM() { CompanyName = "Assecco Poland", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Aleksandra Nowicka", CardID = "1099" });
-            eventItems.Add(new EventVM() { CompanyName = "OPGK Rzeszów", EventDate = DateTime.Now.ToString("dd MM yyyy h:mm:ss"), EventType = "Wejscie", WorkerName = "Marta Krupa", CardID = "1109" });
-
             EventsList.ItemsSource = eventItems;
         }
 
@@ -112,6 +140,10 @@ namespace RSunicard
             AddWorker winAddNewWorker = new AddWorker();
             winAddNewWorker.Show();
         }
-        
+
+        private void ConnectToCOMPortClick(object sender, RoutedEventArgs e)
+        {
+            ConnectToCOM();
+        }
     }
 }

@@ -67,7 +67,7 @@ namespace RSunicard.Logic
             {
                 CardID = w.CardID,
                 CompanyName = company.CompanyName,
-                EventDate = e.EventDate.ToString("dd MM yyyy h:mm:ss"),
+                EventDate = e.EventDate.ToLocalTime().ToString("dd MM yyyy HH:mm:ss"),
                 EventType = e.EventType,
                 WorkerName = w.WorkerName
             })).ToList();
@@ -84,15 +84,22 @@ namespace RSunicard.Logic
             SaveDatabase(dbModel);
         }
 
-        public static void AddNewWorker(string companyName, string userName)
+        public static void AddNewWorker(string companyName, string userName, string cardId)
         {
             var dbModel = GetDBModel();
             var company = dbModel.Companies.Where(x => x.CompanyName == companyName).FirstOrDefault();
             company.Workers.Add(new DBWorker
             {
-                CardID = "ASDA",
+                CardID = cardId,
                 WorkerName = userName,
                 Events = new List<DBEvent>()
+                {
+                    new DBEvent
+                    {
+                        EventDate = DateTime.Now,
+                        EventType = "Wejscie"
+                    }
+                }
             });
             SaveDatabase(dbModel);
         }
@@ -129,6 +136,42 @@ namespace RSunicard.Logic
                 }).FirstOrDefault();
             };
             return result;
+        }
+
+        public static bool ReceiveSerialPortSignal(string input)
+        {
+            if (input.Length != 8)
+            {
+                return false;
+            }
+            var dbModel = GetDBModel();
+            var worker = dbModel.Companies.SelectMany(x => x.Workers).FirstOrDefault(x => x.CardID == input);
+            if (worker == null)
+            {
+                return false;
+            }
+            var lastEvent = worker.Events.OrderBy(x=> x.EventDate).LastOrDefault();
+            switch (lastEvent.EventType)
+            {
+                case "Wejscie":
+                    worker.Events.Add(new DBEvent
+                    {
+                        EventDate = DateTime.Now,
+                        EventType = "Wyjscie"
+                    });
+                    SaveDatabase(dbModel);
+                    return true;
+                case "Wyjscie":
+                    worker.Events.Add(new DBEvent
+                    {
+                        EventDate = DateTime.Now,
+                        EventType = "Wejscie"
+                    });
+                    SaveDatabase(dbModel);
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

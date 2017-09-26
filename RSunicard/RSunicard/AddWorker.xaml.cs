@@ -30,7 +30,7 @@ namespace RSunicard
         private void AddNewWorkerlick(object sender, RoutedEventArgs e)
         {
             var company = companySelectList.SelectedItem as CompanyVM;
-            Service.AddNewWorker(company.CompanyName, newWorkerName.Text);
+            Service.AddNewWorker(company.CompanyName, newWorkerName.Text, cardIDinput.Text);
             this.Close();
         }
     }
