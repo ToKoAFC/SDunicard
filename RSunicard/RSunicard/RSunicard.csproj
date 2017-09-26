@@ -66,6 +66,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CompanyDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,6 +84,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CompanyDetails.xaml.cs">
+      <DependentUpon>CompanyDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Database\Models\DBModel.cs" />
     <Compile Include="Database\Models\DBEvent.cs" />
     <Compile Include="Database\Models\DBWorker.cs" />
@@ -91,6 +98,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Presentation\Models\CompanyDetailsVM.cs" />
     <Compile Include="Presentation\Models\CompanyVM.cs" />
     <Compile Include="Presentation\Models\EventsVM.cs" />
     <Compile Include="Presentation\Models\WorkerVM.cs" />

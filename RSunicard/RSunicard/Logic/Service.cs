@@ -69,7 +69,7 @@ namespace RSunicard.Logic
                 CompanyName = company.CompanyName,
                 EventDate = e.EventDate.ToString("dd MM yyyy h:mm:ss"),
                 EventType = e.EventType,
-                WorkerName = $"{w.FirstName} {w.SurName}"
+                WorkerName = w.WorkerName
             })).ToList();
         }
 
@@ -91,7 +91,7 @@ namespace RSunicard.Logic
             company.Workers.Add(new DBWorker
             {
                 CardID = "ASDA",
-                FirstName = userName,
+                WorkerName = userName,
                 Events = new List<DBEvent>()
             });
             SaveDatabase(dbModel);
@@ -108,6 +108,25 @@ namespace RSunicard.Logic
                     CompanyName = x.CompanyName,
                     WorkersCount = x.Workers.Count
                 }).ToList();
+            };
+            return result;
+        }
+
+        public static CompanyDetailsVM GetCompanyDetails(string companyName)
+        {
+            var dbModel = GetDBModel();
+            var result = new CompanyDetailsVM();
+            if (dbModel.Companies != null)
+            {
+                result = dbModel.Companies.Where(c => c.CompanyName == companyName).Select(c => new CompanyDetailsVM
+                {
+                    CompanyName = c.CompanyName,
+                    Workers = c.Workers.Select(x => new WorkerVM
+                    {
+                        CardID = x.CardID,
+                        FirstName = x.WorkerName
+                    }).ToList()
+                }).FirstOrDefault();
             };
             return result;
         }

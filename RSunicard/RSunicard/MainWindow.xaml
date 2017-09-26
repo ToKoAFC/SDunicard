@@ -64,8 +64,5 @@
                 <Button Grid.Column="1" Margin="50,100" Height="100" BorderThickness="2" Click="AddNewWorkerlick">Dodaj pracownika</Button>
             </Grid>
         </StackPanel>
-        <!--<StackPanel x:Name="ManageContent" Grid.Row="1">
-
-        </StackPanel>-->
     </Grid>
 </Window>
