@@ -26,6 +26,7 @@ namespace RSunicard
             InitializeComponent();
             var company = Service.GetCompanyDetails(companyName);
             WorkersList.ItemsSource = company.Workers;
+            companyNameLabel.Content = company.CompanyName;
         }      
     }
 }
