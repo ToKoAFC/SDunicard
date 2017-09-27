@@ -173,5 +173,17 @@ namespace RSunicard.Logic
                     return false;
             }
         }
+
+        public static void CreateDatebase()
+        {
+            if (!Directory.Exists(DBpath))
+            {
+                Directory.CreateDirectory(DBpath);
+            }
+            if (!File.Exists($"{DBpath}\\{DBfilename}"))
+            {
+                File.CreateText($"{DBpath}\\{DBfilename}");
+            }
+        }
     }
 }
