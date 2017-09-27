@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:RSunicard"
         mc:Ignorable="d"
         Title="RSunicard" Height="400" Width="700" ResizeMode="NoResize">
-    <Grid>
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="Auto"/>
@@ -93,5 +93,28 @@
                 <Button Grid.Column="0" Margin="30,10" Grid.Row="1">Backup bazy danych</Button>                
             </Grid>
         </StackPanel>
+    </Grid>-->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="500"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Background="#E0E0E0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Background="#BDBDBD" Click="DashboardClick">Panel główny</Button>
+                <Button Grid.Row="1" Background="#BDBDBD" Click="ManageClick">Stan pracowników</Button>
+                <Button Grid.Row="2" Background="#757575">Zarządzaj</Button>
+                <Button Grid.Row="3" Background="#BDBDBD" Click="RaportsClick">Generuj raport</Button>
+                <Button Grid.Row="4" Background="#BDBDBD">Ustawienia</Button>
+            </Grid>
+        </StackPanel>
+        <GridSplitter Grid.Column="0" Width="1" Background="Black"/>
     </Grid>
 </Window>
