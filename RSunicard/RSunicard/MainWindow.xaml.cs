@@ -76,6 +76,7 @@ namespace RSunicard
             DashboardTab.Background = Brushes.Gray;
             DashboardContent.Visibility = Visibility.Visible;
             ManageContent.Visibility = Visibility.Collapsed;
+            RaportContent.Visibility = Visibility.Collapsed;
             var dbModel = Service.GetDBModel();
 
             //Company section
@@ -101,6 +102,7 @@ namespace RSunicard
             ManageTab.Background = Brushes.Gray;
             DashboardContent.Visibility = Visibility.Collapsed;
             ManageContent.Visibility = Visibility.Visible;
+            RaportContent.Visibility = Visibility.Collapsed;
             //companySelectList.ItemsSource = Service.GetCompanySelectList();
         }
 
@@ -114,6 +116,7 @@ namespace RSunicard
             RaportsTab.Background = Brushes.Gray;
             DashboardContent.Visibility = Visibility.Collapsed;
             ManageContent.Visibility = Visibility.Collapsed;
+            RaportContent.Visibility = Visibility.Visible;
         }
 
         private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
