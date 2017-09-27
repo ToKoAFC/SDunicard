@@ -58,14 +58,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="AddCompany.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="AddWorker.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="CompanyDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -74,12 +66,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="AddCompany.xaml.cs">
-      <DependentUpon>AddCompany.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AddWorker.xaml.cs">
-      <DependentUpon>AddWorker.xaml</DependentUpon>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -91,24 +77,19 @@
     <Compile Include="Database\Models\DBEvent.cs" />
     <Compile Include="Database\Models\DBWorker.cs" />
     <Compile Include="Database\Models\DBCompany.cs" />
+    <Compile Include="Logic\InfoTypeEnum.cs" />
+    <Compile Include="Logic\ScanResult.cs" />
     <Compile Include="Logic\Service.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ProgramWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Presentation\Models\CompanyDetailsVM.cs" />
     <Compile Include="Presentation\Models\CompanyVM.cs" />
     <Compile Include="Presentation\Models\EventsVM.cs" />
     <Compile Include="Presentation\Models\WorkerVM.cs" />
-    <Compile Include="ProgramWindow.xaml.cs">
-      <DependentUpon>ProgramWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

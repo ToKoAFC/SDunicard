@@ -16,6 +16,7 @@ namespace RSunicard.Logic
         static readonly string DBpath = @"C:\\RSunicard";
         static readonly string DBfilename = @"RSunicard.txt";
 
+
         public static DBModel GetDBModel()
         {
             var database = new DBModel();
@@ -32,6 +33,80 @@ namespace RSunicard.Logic
             }
             return database;
         }
+
+        public static List<EventVM> GetTodaysEvents()
+        {
+            var dBModel = GetDBModel();
+            if (dBModel.Companies == null || !dBModel.Companies.Any())
+            {
+                return new List<EventVM>();
+            }
+            var events = dBModel.Companies.SelectMany(c => c.Workers.SelectMany(w => w.Events.Select(e => new EventVM
+            {
+                CardID = w.CardID,
+                CompanyName = c.CompanyName,
+                EventDate = e.EventDate.ToLocalTime().ToString("dd MM yyyy HH:mm:ss"),
+                SortParam = e.EventDate,
+                EventType = e.EventType,
+                WorkerName = w.WorkerName
+            }))).OrderByDescending(x => x.SortParam).ToList();
+            return events;
+        }
+
+        public static List<CompanyVM> GetCompanyList()
+        {
+            var dbModel = GetDBModel();
+            var result = new List<CompanyVM>();
+            if (dbModel.Companies != null)
+            {
+                result = dbModel.Companies.Select(x => new CompanyVM
+                {
+                    CompanyName = x.CompanyName,
+                    WorkersCount = x.Workers.Where(w => w.Events.Last().EventType == "Wejscie").ToList().Count
+                }).ToList();
+            };
+            return result;
+        }
+
+        public static List<WorkerVM> GetPresentWorkers(string companyName)
+        {
+            var dbModel = GetDBModel();
+            var company = dbModel.Companies.Where(c => c.CompanyName == companyName).FirstOrDefault();
+            if (company == null)
+            {
+                return new List<WorkerVM>();
+            }
+            var workers = company.Workers.Where(w => w.Events.Last().EventType == "Wejscie").Select(w => new WorkerVM
+            {
+                CardID = w.CardID,
+                Name = w.WorkerName
+            }).ToList();
+            return workers;
+        }
+
+        public static bool CheckCardIdIfExist(string cardId)
+        {
+            var dbModel = GetDBModel();
+            var companies = dbModel.Companies.ToList();
+            if (companies == null || !companies.Any())
+            {
+                return false;
+            }
+            var result = companies.SelectMany(c => c.Workers.Select(w => w.CardID)).Where(c => c == cardId).Any();
+            return result;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         public static void SaveDatabase(DBModel database)
         {
@@ -51,27 +126,6 @@ namespace RSunicard.Logic
             catch { }
         }
 
-        public static List<EventVM> GetEvents(string companyName)
-        {
-            var dBModel = GetDBModel();
-            if (dBModel.Companies == null || !dBModel.Companies.Any())
-            {
-                return new List<EventVM>();
-            }
-            var company = dBModel.Companies.FirstOrDefault(x => x.CompanyName == companyName);
-            if (company == null)
-            {
-                return new List<EventVM>();
-            }
-            return company.Workers.SelectMany(w => w.Events.Select(e => new EventVM
-            {
-                CardID = w.CardID,
-                CompanyName = company.CompanyName,
-                EventDate = e.EventDate.ToLocalTime().ToString("dd MM yyyy HH:mm:ss"),
-                EventType = e.EventType,
-                WorkerName = w.WorkerName
-            })).ToList();
-        }
 
         public static void AddNewCompany(string companyName)
         {
@@ -131,26 +185,26 @@ namespace RSunicard.Logic
                     Workers = c.Workers.Select(x => new WorkerVM
                     {
                         CardID = x.CardID,
-                        FirstName = x.WorkerName
+                        Name = x.WorkerName
                     }).ToList()
                 }).FirstOrDefault();
             };
             return result;
         }
 
-        public static bool ReceiveSerialPortSignal(string input)
+        public static ScanResult AddEventToWorker(string cardId)
         {
-            if (input.Length != 8)
+            if (cardId.Length != 8)
             {
-                return false;
+                return new ScanResult { CardIdExisted = false };
             }
             var dbModel = GetDBModel();
-            var worker = dbModel.Companies.SelectMany(x => x.Workers).FirstOrDefault(x => x.CardID == input);
+            var worker = dbModel.Companies.SelectMany(x => x.Workers).FirstOrDefault(x => x.CardID == cardId);
             if (worker == null)
             {
-                return false;
+                return new ScanResult { CardIdExisted = false };
             }
-            var lastEvent = worker.Events.OrderBy(x=> x.EventDate).LastOrDefault();
+            var lastEvent = worker.Events.OrderBy(x => x.EventDate).LastOrDefault();
             switch (lastEvent.EventType)
             {
                 case "Wejscie":
@@ -160,7 +214,7 @@ namespace RSunicard.Logic
                         EventType = "Wyjscie"
                     });
                     SaveDatabase(dbModel);
-                    return true;
+                    return new ScanResult { CardIdExisted = true, EventType = "Wyjscie", WorkerName = worker.WorkerName };
                 case "Wyjscie":
                     worker.Events.Add(new DBEvent
                     {
@@ -168,9 +222,9 @@ namespace RSunicard.Logic
                         EventType = "Wejscie"
                     });
                     SaveDatabase(dbModel);
-                    return true;
+                    return new ScanResult { CardIdExisted = true, EventType = "Wejscie", WorkerName = worker.WorkerName };
                 default:
-                    return false;
+                    return new ScanResult { CardIdExisted = false };
             }
         }
 
@@ -185,5 +239,6 @@ namespace RSunicard.Logic
                 File.CreateText($"{DBpath}\\{DBfilename}");
             }
         }
+
     }
 }

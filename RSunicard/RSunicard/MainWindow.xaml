@@ -5,45 +5,72 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RSunicard"
         mc:Ignorable="d"
-        Title="RSunicard" Height="400" Width="700" ResizeMode="NoResize">
-    <!--<Grid>
+        Title="RSunicard" Height="600" Width="800" ResizeMode="NoResize">   
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="LightGray">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="233"/>
-                <ColumnDefinition Width="233"/>
-                <ColumnDefinition Width="234"/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="DashboardTab" Grid.Column="0" Background="Gray" Click="DashboardClick">Podgląd</Button>
-            <Button x:Name="ManageTab" Grid.Column="1" Background="LightGray" Opacity="0.6" Click="ManageClick">Zarządzaj</Button>
-            <Button x:Name="RaportsTab" Grid.Column="2" Background="LightGray" Opacity="0.6" Click="RaportsClick">Raporty</Button>
-        </Grid>
-
-        <Grid x:Name="warningGrid" Visibility="Collapsed" Background="LightYellow" Grid.Row="1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="notificationGrid" Visibility="Collapsed" Background="LightYellow" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
             </Grid>
-            <Label x:Name="warningLabel" Grid.Column="0" FontSize="10"></Label>
+            <Label x:Name="notificationLabel" Grid.Column="0" FontSize="10"></Label>
             <Button x:Name="connectButton" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Click="ConnectToCOMPortClick">Połącz</Button>
+            
+            <Label x:Name="COMlabel" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Margin="0,0,105,0" >COM:</Label>
+            <TextBox x:Name="COMinput" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Margin="0,0,65,0" ></TextBox>
+            <Button x:Name="notificationOKbutton" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Click="DiscardNotification">OK</Button>
         </Grid>
-        
-        <StackPanel x:Name="DashboardContent" Grid.Row="2">
+        <StackPanel Grid.Row="1" Grid.Column="0" Background="#E0E0E0">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <ListView Grid.Column="0" x:Name="CompanyList">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Button x:Name="DashboardTab" Grid.Row="0" Background="#757575" Click="DashboardClick">Panel główny</Button>
+                <Button x:Name="StateTab" Grid.Row="1" Background="#BDBDBD" Click="StateClick">Stan pracowników</Button>
+                <Button x:Name="ManageTab" Grid.Row="2" Background="#BDBDBD" Click="ManageClick">Zarządzaj</Button>
+                <Button x:Name="RaportsTab" Grid.Row="3" Background="#BDBDBD" Click="RaportsClick">Generuj raport</Button>
+                <Button x:Name="SettingsTab" Grid.Row="4" Background="#BDBDBD" Click="SettingsClick">Ustawienia</Button>
+            </Grid>
+        </StackPanel>
+        <GridSplitter Grid.Column="0" Width="1" Background="Black"/>
+
+        <Grid x:Name="DashboardContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed">
+                <ListView x:Name="DashboardTable" ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Nazwa" Width="120" DisplayMemberBinding="{Binding CompanyName}" />
+                            <GridViewColumn Header="Data" Width="125" DisplayMemberBinding="{Binding EventDate}" />
+                            <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding CardID}" />
+                            <GridViewColumn Header="Pracownik" Width="100" DisplayMemberBinding="{Binding WorkerName}" />
+                            <GridViewColumn Header="Firma" Width="100" DisplayMemberBinding="{Binding CompanyName}" />
+                            <GridViewColumn Header="Zdarzenie" Width="70" DisplayMemberBinding="{Binding EventType}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>          
+        </Grid>
+
+        <StackPanel x:Name="StateContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ListView Grid.Column="0" x:Name="StateCompanyList">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Nazwa" Width="150" DisplayMemberBinding="{Binding CompanyName}" />
                             <GridViewColumn Header="Pracownicy" Width="80" DisplayMemberBinding="{Binding WorkersCount}" />
                         </GridView>
                     </ListView.View>
@@ -53,32 +80,69 @@
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
-                <ListView Grid.Column="1" x:Name="EventsList">
+                <ListView Grid.Column="1" x:Name="StateWorkersList">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Data" Width="100" DisplayMemberBinding="{Binding EventDate}" />
-                            <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding CardID}" />
-                            <GridViewColumn Header="Pracownik" Width="100" DisplayMemberBinding="{Binding WorkerName}" />
-                            <GridViewColumn Header="Firma" Width="100" DisplayMemberBinding="{Binding CompanyName}" />
-                            <GridViewColumn Header="Zdarzenie" Width="70" DisplayMemberBinding="{Binding EventType}" />
+                            <GridViewColumn Header="ID" Width="100" DisplayMemberBinding="{Binding CardID}" />
+                            <GridViewColumn Header="Pracownik" Width="230" DisplayMemberBinding="{Binding Name}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
             </Grid>
         </StackPanel>
 
-        <StackPanel x:Name="ManageContent" Grid.Row="2" Visibility="Collapsed">
+        <StackPanel x:Name="ManageContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Margin="50,100" Height="100" BorderThickness="2" Click="AddNewCompanyClick">Dodaj firmę</Button>
-                <Button Grid.Column="1" Margin="50,100" Height="100" BorderThickness="2" Click="AddNewWorkerlick">Dodaj pracownika</Button>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Margin="15" Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" VerticalAlignment="Center">Nazwa firmy:</Label>
+                    <TextBox x:Name="newCompanyName" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"></TextBox>
+                    <Button Grid.Row="1" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="AddNewCompanyClick">Dodaj firmę</Button>
+                </Grid>
+                <Grid Margin="15" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" VerticalAlignment="Center">Imie i nazwisko:</Label>
+                    <TextBox x:Name="newWorkerName" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    <Label Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">Firma:</Label>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Name="ManagecompanySelectList" Margin="0,10" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding CompanyName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Label Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">Card ID:</Label>
+                    <TextBox x:Name="ManagecardIDinput" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+                    <Button Grid.Row="3" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="AddNewWorkerlick">Dodaj pracownika</Button>
+                </Grid>
             </Grid>
         </StackPanel>
 
-        <StackPanel x:Name="RaportContent" Visibility="Collapsed" Grid.Row="2">
+        <StackPanel x:Name="RaportContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed" >
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -90,31 +154,12 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Button Grid.Column="0" Margin="30,10" Grid.Row="0">Raport dzienny</Button>
-                <Button Grid.Column="0" Margin="30,10" Grid.Row="1">Backup bazy danych</Button>                
+                <Button Grid.Column="0" Margin="30,10" Grid.Row="1">Backup bazy danych</Button>
             </Grid>
         </StackPanel>
-    </Grid>-->
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="500"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Background="#E0E0E0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                </Grid.RowDefinitions>
-                <Button Grid.Row="0" Background="#BDBDBD" Click="DashboardClick">Panel główny</Button>
-                <Button Grid.Row="1" Background="#BDBDBD" Click="ManageClick">Stan pracowników</Button>
-                <Button Grid.Row="2" Background="#757575">Zarządzaj</Button>
-                <Button Grid.Row="3" Background="#BDBDBD" Click="RaportsClick">Generuj raport</Button>
-                <Button Grid.Row="4" Background="#BDBDBD">Ustawienia</Button>
-            </Grid>
+
+        <StackPanel x:Name="SettingsContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed" >
+
         </StackPanel>
-        <GridSplitter Grid.Column="0" Width="1" Background="Black"/>
     </Grid>
 </Window>
