@@ -259,6 +259,7 @@ namespace RSunicard
             var company = ManagecompanySelectList.SelectedItem as CompanyVM;
             if (company == null) return;
             Service.AddNewWorker(company.CompanyName, newWorkerName.Text, ManagecardIDinput.Text);
+            LoadManageContent();
             ShowNotification(InfoTypeEnum.Success, $"{newWorkerName.Text} został dodany do firmy {company.CompanyName}");
             newWorkerName.Text = string.Empty;
             ManagecardIDinput.Text = string.Empty;
@@ -284,7 +285,25 @@ namespace RSunicard
             ShowNotification(InfoTypeEnum.Success, $"Usunięto pracownika: {worker.Name}");
             newWorkerName.Text = string.Empty;
             ManagecardIDinput.Text = string.Empty;
-        }        
+        }
+
+        //RAPORTS 
+
+        private void DailyRaportClick(object sender, RoutedEventArgs e)
+        {
+            //todo Serivce.daily...
+            ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
+        }
+        private void BackupDatabaseClick(object sender, RoutedEventArgs e)
+        {
+            //todo Serivce.backup...
+            ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
+        }
+        private void CurrentRaportClick(object sender, RoutedEventArgs e)
+        {
+            //todo Serivce.current...
+            ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
+        }
     }
 
     public static class StringExtension

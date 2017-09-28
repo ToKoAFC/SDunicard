@@ -197,8 +197,8 @@
                     <RowDefinition Height="100"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Button Grid.Column="0" Margin="30,10" Grid.Row="0">Raport dzienny</Button>
-                <Button Grid.Column="0" Margin="30,10" Grid.Row="1">Backup bazy danych</Button>
+                <Button Grid.Column="0" Margin="30,10" Grid.Row="0" Click="DailyRaportClick">Raport dzienny</Button>
+                <Button Grid.Column="0" Margin="30,10" Grid.Row="1" Click="BackupDatabaseClick">Backup bazy danych</Button>
             </Grid>
         </StackPanel>
 
