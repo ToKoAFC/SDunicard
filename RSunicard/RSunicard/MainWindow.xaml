@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RSunicard"
         mc:Ignorable="d"
-        Title="RSunicard" Height="600" Width="800" ResizeMode="NoResize">   
+        Title="Czytnik kard RFID" Height="600" Width="800" ResizeMode="NoResize">   
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -48,17 +48,18 @@
         <GridSplitter Grid.Column="0" Width="1" Background="Black"/>
 
         <Grid x:Name="DashboardContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed">
-                <ListView x:Name="DashboardTable" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Data" Width="125" DisplayMemberBinding="{Binding EventDate}" />
-                            <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding CardID}" />
-                            <GridViewColumn Header="Pracownik" Width="100" DisplayMemberBinding="{Binding WorkerName}" />
-                            <GridViewColumn Header="Firma" Width="100" DisplayMemberBinding="{Binding CompanyName}" />
-                            <GridViewColumn Header="Zdarzenie" Width="70" DisplayMemberBinding="{Binding EventType}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>          
+
+            <ListView x:Name="DashboardTable" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Data" Width="125" DisplayMemberBinding="{Binding EventDate}" />
+                        <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding CardID}" />
+                        <GridViewColumn Header="Pracownik" Width="100" DisplayMemberBinding="{Binding WorkerName}" />
+                        <GridViewColumn Header="Firma" Width="100" DisplayMemberBinding="{Binding CompanyName}" />
+                        <GridViewColumn Header="Zdarzenie" Width="100" DisplayMemberBinding="{Binding EventType}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </Grid>
 
         <StackPanel x:Name="StateContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed">
@@ -91,14 +92,16 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel x:Name="ManageContent" Grid.Column="1" Grid.Row="1" Visibility="Collapsed">
+        <StackPanel x:Name="ManageContent" Grid.Column="1" Grid.Row="1" Visibility="Visible">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid Margin="15" Grid.Row="0">
+                <Grid Margin="15,0,15,0" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition/>
@@ -111,7 +114,7 @@
                     <TextBox x:Name="newCompanyName" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"></TextBox>
                     <Button Grid.Row="1" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="AddNewCompanyClick">Dodaj firmę</Button>
                 </Grid>
-                <Grid Margin="15" Grid.Row="1">
+                <Grid Margin="15,0" Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition/>
@@ -121,7 +124,6 @@
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="50"/>
-                        <RowDefinition Height="200"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Column="0" VerticalAlignment="Center">Imie i nazwisko:</Label>
                     <TextBox x:Name="newWorkerName" Grid.Column="1" VerticalAlignment="Center"></TextBox>
@@ -138,6 +140,48 @@
                     <Label Grid.Column="0" Grid.Row="2" VerticalAlignment="Center">Card ID:</Label>
                     <TextBox x:Name="ManagecardIDinput" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"></TextBox>
                     <Button Grid.Row="3" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="AddNewWorkerlick">Dodaj pracownika</Button>
+                </Grid>
+                <Grid Margin="15,0" Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">Firma:</Label>
+                    <ComboBox Grid.Row="0" Grid.Column="1" Name="ManagecompanyDeleteSelectList" Margin="0,10" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding CompanyName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Row="1" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="DeleteCompanyClick">Usuń firmę</Button>
+                </Grid>
+                <Grid Margin="15,0" Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">Pracownik:</Label>
+                    <ComboBox Grid.Row="0" Grid.Column="1" Name="ManageworkersDeleteSelectList" Margin="0,10" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Row="1" Grid.Column="1" Height="25" Width="120" Margin="5,5,0,5" HorizontalAlignment="Right" Click="DeleteWorkerClick">Usuń pracownika</Button>
                 </Grid>
             </Grid>
         </StackPanel>

@@ -13,19 +13,20 @@ namespace RSunicard.Logic
 {
     public static class Service
     {
+        // DATABASE SERVICE
         static readonly string DBpath = @"C:\\RSunicard";
-        static readonly string DBfilename = @"RSunicard.txt";
 
 
         public static DBModel GetDBModel()
         {
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
             var database = new DBModel();
 
-            if (File.Exists($"{DBpath}\\{DBfilename}"))
+            if (File.Exists($"{DBpath}\\{fileName}"))
             {
                 try
                 {
-                    var dbJson = File.ReadAllText($"{DBpath}\\{DBfilename}");
+                    var dbJson = File.ReadAllText($"{DBpath}\\{fileName}");
                     var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
                     database = dbModel ?? new DBModel();
                 }
@@ -64,6 +65,11 @@ namespace RSunicard.Logic
                     CompanyName = x.CompanyName,
                     WorkersCount = x.Workers.Where(w => w.Events.Last().EventType == "Wejscie").ToList().Count
                 }).ToList();
+                result.Add(new CompanyVM
+                {
+                    CompanyName = "Lista wszystkich",
+                    WorkersCount = dbModel.Companies.SelectMany(x => x.Workers.Where(v => v.Events.Last().EventType == "Wejscie")).ToList().Count
+                });
             };
             return result;
         }
@@ -110,18 +116,19 @@ namespace RSunicard.Logic
 
         public static void SaveDatabase(DBModel database)
         {
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
             if (!Directory.Exists(DBpath))
             {
                 Directory.CreateDirectory(DBpath);
             }
-            if (!File.Exists($"{DBpath}\\{DBfilename}"))
+            if (!File.Exists($"{DBpath}\\{fileName}"))
             {
-                File.CreateText($"{DBpath}\\{DBfilename}");
+                File.CreateText($"{DBpath}\\{fileName}");
             }
             try
             {
                 var json = new JavaScriptSerializer().Serialize(database);
-                File.WriteAllText($"{DBpath}\\{DBfilename}", json);
+                File.WriteAllText($"{DBpath}\\{fileName}", json);
             }
             catch { }
         }
@@ -151,10 +158,26 @@ namespace RSunicard.Logic
                     new DBEvent
                     {
                         EventDate = DateTime.Now,
-                        EventType = "Wejscie"
+                        EventType = "Dodanie karty"
                     }
                 }
             });
+            SaveDatabase(dbModel);
+        }
+
+        public static void DeleteCompany(string companyName)
+        {
+            var dbModel = GetDBModel();
+            var company = dbModel.Companies.Where(x => x.CompanyName == companyName).FirstOrDefault();
+            dbModel.Companies.Remove(company);
+            SaveDatabase(dbModel);
+        }
+
+        public static void DeleteWorker(string cardId)
+        {
+            var dbModel = GetDBModel();
+
+            var workerToDelete = dbModel.Companies.SelectMany(c => c.Workers).Where(w => w.CardID == cardId);
             SaveDatabase(dbModel);
         }
 
@@ -168,6 +191,22 @@ namespace RSunicard.Logic
                 {
                     CompanyName = x.CompanyName,
                     WorkersCount = x.Workers.Count
+                }).ToList();
+            };
+            return result;
+        }
+
+        public static List<WorkerVM> GetWorkersSelectList()
+        {
+            var dbModel = GetDBModel();
+            var result = new List<WorkerVM>();
+            if (dbModel.Companies != null)
+            {
+                result = dbModel.Companies.SelectMany(x => x.Workers).Select(c =>
+                new WorkerVM
+                {
+                    CardID = c.CardID,
+                    Name = c.WorkerName
                 }).ToList();
             };
             return result;
@@ -216,6 +255,7 @@ namespace RSunicard.Logic
                     SaveDatabase(dbModel);
                     return new ScanResult { CardIdExisted = true, EventType = "Wyjscie", WorkerName = worker.WorkerName };
                 case "Wyjscie":
+                case "Dodanie karty":
                     worker.Events.Add(new DBEvent
                     {
                         EventDate = DateTime.Now,
@@ -230,13 +270,43 @@ namespace RSunicard.Logic
 
         public static void CreateDatebase()
         {
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
             if (!Directory.Exists(DBpath))
             {
                 Directory.CreateDirectory(DBpath);
             }
-            if (!File.Exists($"{DBpath}\\{DBfilename}"))
+            if (!File.Exists($"{DBpath}\\{fileName}"))
             {
-                File.CreateText($"{DBpath}\\{DBfilename}");
+                string[] fileEntries = Directory.GetFiles(DBpath);
+                var lastDbPath = fileEntries.OrderBy(x => x).ToList().LastOrDefault();
+                if (fileEntries.Length > 0)
+                {
+                    var dbJson = File.ReadAllText(lastDbPath, Encoding.GetEncoding("iso-8859-1"));
+                    var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
+                    var newdbModel = new DBModel
+                    {
+                        Companies = dbModel.Companies.Select(x => new DBCompany
+                        {
+                            CompanyName = x.CompanyName,
+                            Workers = x.Workers.Select(w => new DBWorker
+                            {
+                                CardID = w.CardID,
+                                WorkerName = w.WorkerName,
+                                Events = new List<DBEvent>()
+                                {
+                                    w.Events.LastOrDefault()
+                                }
+                            }).ToList()
+                        }).ToList()
+                    };
+                    var json = new JavaScriptSerializer().Serialize(newdbModel);
+                    using (var sw = File.CreateText($"{DBpath}\\{fileName}"))
+                    {
+                        sw.WriteLine(json);
+                    }
+                    //File.WriteAllText($"{DBpath}\\{fileName}", json);
+                }
+
             }
         }
 

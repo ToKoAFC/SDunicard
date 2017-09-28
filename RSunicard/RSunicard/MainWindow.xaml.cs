@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using RSunicard.Logic;
 using System.IO.Ports;
 using System.Threading;
+using System.Globalization;
 
 namespace RSunicard
 {
@@ -76,7 +77,7 @@ namespace RSunicard
                 if (result.CardIdExisted)
                 {
                     Dispatcher.BeginInvoke((Action)(() => ReloadContent()));
-                    sp.Write($"{result.WorkerName} {result.EventType}\r\n");
+                    sp.Write($"{result.WorkerName.RemoveDiacritics()} {result.EventType}\r\n");
                 }
                 return;
             }
@@ -240,7 +241,10 @@ namespace RSunicard
         //MENAGE
         private void LoadManageContent()
         {
-            ManagecompanySelectList.ItemsSource = Service.GetCompanySelectList();
+            var items = Service.GetCompanySelectList();
+            ManagecompanySelectList.ItemsSource = items;
+            ManagecompanyDeleteSelectList.ItemsSource = items;
+            ManageworkersDeleteSelectList.ItemsSource = Service.GetWorkersSelectList();
         }
         private void AddNewCompanyClick(object sender, RoutedEventArgs e)
         {
@@ -253,10 +257,41 @@ namespace RSunicard
         private void AddNewWorkerlick(object sender, RoutedEventArgs e)
         {
             var company = ManagecompanySelectList.SelectedItem as CompanyVM;
+            if (company == null) return;
             Service.AddNewWorker(company.CompanyName, newWorkerName.Text, ManagecardIDinput.Text);
             ShowNotification(InfoTypeEnum.Success, $"{newWorkerName.Text} został dodany do firmy {company.CompanyName}");
             newWorkerName.Text = string.Empty;
             ManagecardIDinput.Text = string.Empty;
+        }
+
+        private void DeleteCompanyClick(object sender, RoutedEventArgs e)
+        {
+            var company = ManagecompanyDeleteSelectList.SelectedItem as CompanyVM;
+            if (company == null) return;
+            Service.DeleteCompany(company.CompanyName);
+            LoadManageContent();
+            ShowNotification(InfoTypeEnum.Success, $"Usunięto firmę: {company.CompanyName}");
+            newWorkerName.Text = string.Empty;
+            ManagecardIDinput.Text = string.Empty;
+        }
+
+        private void DeleteWorkerClick(object sender, RoutedEventArgs e)
+        {
+            var worker = ManageworkersDeleteSelectList.SelectedItem as WorkerVM;
+            if (worker == null) return;
+            Service.DeleteWorker(worker.CardID);
+            LoadManageContent();
+            ShowNotification(InfoTypeEnum.Success, $"Usunięto pracownika: {worker.Name}");
+            newWorkerName.Text = string.Empty;
+            ManagecardIDinput.Text = string.Empty;
+        }        
+    }
+
+    public static class StringExtension
+    {
+        public static string RemoveDiacritics(this string text)
+        {
+            return Encoding.UTF8.GetString(Encoding.GetEncoding("ISO-8859-8").GetBytes(text));
         }
     }
 }
