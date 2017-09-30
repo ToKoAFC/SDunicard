@@ -34,6 +34,7 @@ namespace RSunicard
         {
             InitializeComponent();
             ConnectToCOM();
+            SerialPortsList.ItemsSource = SerialPort.GetPortNames();
             Dashboard_Show();
         }
 
@@ -41,23 +42,15 @@ namespace RSunicard
         {
             try
             {
-                sp = new SerialPort(COMinput.Text, 9600, Parity.None, 8, StopBits.One);
+                sp = new SerialPort(SerialPortsList.SelectedItem as string, 9600, Parity.None, 8, StopBits.One);
                 sp.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                 sp.Open();
-                notificationGrid.Visibility = Visibility.Collapsed;
-                connectButton.Visibility = Visibility.Collapsed;
-                notificationLabel.Visibility = Visibility.Collapsed;
-                notificationOKbutton.Visibility = Visibility.Collapsed;
-                ShowNotification(InfoTypeEnum.Success, $"Połączono z {COMinput.Text}");
+                connentionBar.Visibility = Visibility.Collapsed;
+                ShowNotification(InfoTypeEnum.Success, $"Połączono z {SerialPortsList.SelectedItem as string}");
             }
             catch (Exception ex)
             {
-                notificationGrid.Visibility = Visibility.Visible;
-                connectButton.Visibility = Visibility.Visible;
-                notificationLabel.Visibility = Visibility.Visible;
-                notificationOKbutton.Visibility = Visibility.Collapsed;
-                notificationGrid.Background = Brushes.LightPink;
-                notificationLabel.Content = "Nie można połączyć się z portem szeregowym";
+                connentionBar.Visibility = Visibility.Visible;
             }
         }
 
@@ -87,7 +80,7 @@ namespace RSunicard
         private void SetNewWorkerCardId(string cardId)
         {
             ShowNotification(InfoTypeEnum.Info, "Wykryto nową karte, dodaj pracownika!");
-            StateTab.Background = DashboardTab.Background = RaportsTab.Background = SettingsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
+            StateTab.Background = DashboardTab.Background = RaportsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
             ManageTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
 
 
@@ -101,6 +94,7 @@ namespace RSunicard
         {
             LoadDashboardContent();
             LoadStateContent();
+            LoadManageContent();
         }
 
         private void ConnectToCOMPortClick(object sender, RoutedEventArgs e)
@@ -111,32 +105,24 @@ namespace RSunicard
         //NOTIFICATION
         private void ShowNotification(InfoTypeEnum type, string message)
         {
-            notificationGrid.Visibility = Visibility.Visible;
-            connectButton.Visibility = Visibility.Collapsed;
-            COMinput.Visibility = Visibility.Collapsed;
-            COMlabel.Visibility = Visibility.Collapsed;
-            notificationLabel.Visibility = Visibility.Visible;
-            notificationOKbutton.Visibility = Visibility.Visible;
+            notificatiaonBar.Visibility = Visibility.Visible;
             switch (type)
             {
                 case InfoTypeEnum.Error:
-                    notificationGrid.Background = Brushes.LightPink;
+                    notificatiaonBar.Background = Brushes.LightPink;
                     break;
                 case InfoTypeEnum.Info:
-                    notificationGrid.Background = Brushes.LightGoldenrodYellow;
+                    notificatiaonBar.Background = Brushes.LightGoldenrodYellow;
                     break;
                 case InfoTypeEnum.Success:
-                    notificationGrid.Background = Brushes.LightGreen;
+                    notificatiaonBar.Background = Brushes.LightGreen;
                     break;
             }
-            notificationLabel.Content = message;
+            NotificationLabel.Content = message;
         }
         private void DiscardNotification(object sender, RoutedEventArgs e)
         {
-            notificationGrid.Visibility = Visibility.Collapsed;
-            connectButton.Visibility = Visibility.Collapsed;
-            notificationLabel.Visibility = Visibility.Collapsed;
-            notificationOKbutton.Visibility = Visibility.Collapsed;
+            notificatiaonBar.Visibility = Visibility.Collapsed;
         }
 
         //TABS SWITCHING SERVICE
@@ -146,8 +132,8 @@ namespace RSunicard
         }
         private void Dashboard_Show()
         {
-            StateTab.Background = ManageTab.Background = RaportsTab.Background = SettingsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            DashboardTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
+            StateTab.Background = ManageTab.Background = RaportsTab.Background = Brushes.White;
+            DashboardTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
             StateContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
             DashboardContent.Visibility = Visibility.Visible;
@@ -160,8 +146,8 @@ namespace RSunicard
         }
         private void State_Show()
         {
-            RaportsTab.Background = ManageTab.Background = DashboardTab.Background = SettingsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            StateTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
+            RaportsTab.Background = ManageTab.Background = DashboardTab.Background = Brushes.White;
+            StateTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
             DashboardContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
             StateContent.Visibility = Visibility.Visible;
@@ -174,8 +160,8 @@ namespace RSunicard
         }
         private void Manage_Show()
         {
-            StateTab.Background = DashboardTab.Background = RaportsTab.Background = SettingsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            ManageTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
+            StateTab.Background = DashboardTab.Background = RaportsTab.Background = Brushes.White;
+            ManageTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
 
             StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
@@ -190,25 +176,11 @@ namespace RSunicard
         }
         private void Raports_Show()
         {
-            StateTab.Background = ManageTab.Background = DashboardTab.Background = SettingsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            RaportsTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
+            StateTab.Background = ManageTab.Background = DashboardTab.Background = Brushes.White;
+            RaportsTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
             StateContent.Visibility = ManageContent.Visibility = DashboardContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
             RaportContent.Visibility = Visibility.Visible;
-        }
-
-        private void SettingsClick(object sender, RoutedEventArgs e)
-        {
-            Settings_Show();
-        }
-        private void Settings_Show()
-        {
-            StateTab.Background = ManageTab.Background = DashboardTab.Background = RaportsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            SettingsTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
-
-            StateContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = DashboardContent.Visibility = Visibility.Collapsed;
-            SettingsContent.Visibility = Visibility.Visible;
-
         }
 
 
@@ -304,6 +276,10 @@ namespace RSunicard
             //todo Serivce.current...
             ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
         }
+
+        // SETTINGS
+
+        string[] ports = SerialPort.GetPortNames();
     }
 
     public static class StringExtension

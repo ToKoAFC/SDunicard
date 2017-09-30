@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace RSunicard.Logic
@@ -306,7 +305,7 @@ namespace RSunicard.Logic
                     }
                     //File.WriteAllText($"{DBpath}\\{fileName}", json);
                 }
-
+                File.CreateText($"{DBpath}\\{fileName}");
             }
         }
 
