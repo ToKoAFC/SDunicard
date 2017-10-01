@@ -84,7 +84,7 @@ namespace RSunicard
             ManageTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
 
 
-            StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
+            StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility =  Visibility.Collapsed;
             ManageContent.Visibility = Visibility.Visible;
             ManagecardIDinput.Text = cardId;
 
@@ -135,7 +135,7 @@ namespace RSunicard
             StateTab.Background = ManageTab.Background = RaportsTab.Background = Brushes.White;
             DashboardTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
-            StateContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
+            StateContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = Visibility.Collapsed;
             DashboardContent.Visibility = Visibility.Visible;
             LoadDashboardContent();
         }
@@ -149,7 +149,7 @@ namespace RSunicard
             RaportsTab.Background = ManageTab.Background = DashboardTab.Background = Brushes.White;
             StateTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
-            DashboardContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
+            DashboardContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = Visibility.Collapsed;
             StateContent.Visibility = Visibility.Visible;
             LoadStateContent();
         }
@@ -164,7 +164,7 @@ namespace RSunicard
             ManageTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
 
-            StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
+            StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility = Visibility.Collapsed;
             ManageContent.Visibility = Visibility.Visible;
             LoadManageContent();
 
@@ -179,7 +179,7 @@ namespace RSunicard
             StateTab.Background = ManageTab.Background = DashboardTab.Background = Brushes.White;
             RaportsTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
-            StateContent.Visibility = ManageContent.Visibility = DashboardContent.Visibility = SettingsContent.Visibility = Visibility.Collapsed;
+            StateContent.Visibility = ManageContent.Visibility = DashboardContent.Visibility = Visibility.Collapsed;
             RaportContent.Visibility = Visibility.Visible;
         }
 
