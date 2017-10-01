@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Presentation\Models\CompanyDetailsVM.cs" />
     <Compile Include="Presentation\Models\CompanyVM.cs" />
+    <Compile Include="Presentation\Models\RaportItemVM.cs" />
     <Compile Include="Presentation\Models\RaportVM.cs" />
     <Compile Include="Presentation\Models\EventsVM.cs" />
     <Compile Include="Presentation\Models\WorkerVM.cs" />

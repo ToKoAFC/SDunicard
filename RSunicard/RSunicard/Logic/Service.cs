@@ -353,7 +353,10 @@ namespace RSunicard.Logic
                 string result = string.Empty;
                 var dbJson = File.ReadAllText(raport.FilePath, Encoding.GetEncoding("iso-8859-1"));
                 var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
+                foreach (var company in dbModel.Companies)
+                {
 
+                }
             }
             catch (Exception)
             {
