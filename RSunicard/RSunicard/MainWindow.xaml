@@ -63,7 +63,7 @@
                         <ColumnDefinition Width="250"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ListView Grid.Column="0" x:Name="StateCompanyList"  Background="#F0F4C3">
+                    <ListView Grid.Column="0" x:Name="StateCompanyList"  Background="#F0F4C3" AlternationCount="2147483647" >
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Nazwa" Width="150" DisplayMemberBinding="{Binding CompanyName}" />
@@ -72,6 +72,11 @@
                         </ListView.View>
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
+                                <Style.Triggers>
+                                    <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                </Style.Triggers>
                                 <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_PreviewMouseLeftButtonDown" />
                             </Style>
                         </ListView.ItemContainerStyle>
@@ -208,9 +213,9 @@
                         </ComboBox>
                         <Button Grid.Row="1" Width="150" Height="30" Margin="10" HorizontalAlignment="Right" Click="DailyRaportClick">Generuj raport</Button>
                     </Grid>
-                    <Label Background="#212121" Foreground="White" Grid.Row="4" Grid.Column="1">Raport dzienny</Label>
+                    <Label Background="#212121" Foreground="White" Grid.Row="4" Grid.Column="1">Raport dzienny dla firmy</Label>
                     <Grid  Background="#F0F4C3" Grid.Row="5" Grid.Column="1">
-                        <Button Grid.Column="1" Margin="30,10" Grid.Row="0" Click="BackupDatabaseClick">Backup bazy danych</Button>
+                        <Button Grid.Column="1"  Grid.Row="0" Click="BackupDatabaseClick">Backup bazy danych</Button>
                     </Grid>
                 </Grid>
                 <GridSplitter Grid.Column="1" Width="1" Background="Black" HorizontalAlignment="Stretch" />

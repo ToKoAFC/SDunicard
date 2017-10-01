@@ -147,16 +147,17 @@ namespace RSunicard.Logic
             var result = new List<CompanyVM>();
             if (dbModel.Companies != null)
             {
-                result = dbModel.Companies.Select(x => new CompanyVM
-                {
-                    CompanyName = x.CompanyName,
-                    WorkersCount = x.Workers.Where(w => w.Events.Last().EventType == "Wejscie").ToList().Count
-                }).ToList();
                 result.Add(new CompanyVM
                 {
                     CompanyName = "Lista wszystkich",
                     WorkersCount = dbModel.Companies.SelectMany(x => x.Workers.Where(v => v.Events.Last().EventType == "Wejscie")).ToList().Count
                 });
+                result.AddRange(dbModel.Companies.Select(x => new CompanyVM
+                {
+                    CompanyName = x.CompanyName,
+                    WorkersCount = x.Workers.Where(w => w.Events.Last().EventType == "Wejscie").ToList().Count
+                }).ToList());
+
             };
             return result;
         }
