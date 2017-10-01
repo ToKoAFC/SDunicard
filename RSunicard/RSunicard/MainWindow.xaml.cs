@@ -1,25 +1,12 @@
-﻿using RSunicard.Models;
+﻿using RSunicard.Logic;
+using RSunicard.Logic.Extensions;
+using RSunicard.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO.Ports;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Web.Script.Serialization;
-using RSunicard.Database.Models;
-using Newtonsoft.Json;
-using RSunicard.Logic;
-using System.IO.Ports;
-using System.Threading;
-using System.Globalization;
 
 namespace RSunicard
 {
@@ -28,18 +15,24 @@ namespace RSunicard
     /// </summary>
     public partial class MainWindow : Window
     {
-        public SerialPort sp;
+        public SerialPort sp = new SerialPort();
 
         public MainWindow()
         {
             InitializeComponent();
             ConnectToCOM();
             SerialPortsList.ItemsSource = SerialPort.GetPortNames();
+            RaportDaysList.ItemsSource = Service.GetRaportsAvailableDays();
             Dashboard_Show();
         }
 
         private void ConnectToCOM()
         {
+            if (sp.IsOpen)
+            {
+                connentionBar.Visibility = Visibility.Visible;
+                return;
+            }
             try
             {
                 sp = new SerialPort(SerialPortsList.SelectedItem as string, 9600, Parity.None, 8, StopBits.One);
@@ -53,7 +46,6 @@ namespace RSunicard
                 connentionBar.Visibility = Visibility.Visible;
             }
         }
-
 
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
@@ -74,20 +66,15 @@ namespace RSunicard
                 }
                 return;
             }
+            Dispatcher.BeginInvoke((Action)(() => ReloadContent()));
             Dispatcher.BeginInvoke((Action)(() => SetNewWorkerCardId(input)));
         }
 
         private void SetNewWorkerCardId(string cardId)
         {
             ShowNotification(InfoTypeEnum.Info, "Wykryto nową karte, dodaj pracownika!");
-            StateTab.Background = DashboardTab.Background = RaportsTab.Background = new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            ManageTab.Background = new SolidColorBrush(Color.FromRgb(117, 117, 117));
-
-
-            StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility =  Visibility.Collapsed;
-            ManageContent.Visibility = Visibility.Visible;
+            Manage_Show();
             ManagecardIDinput.Text = cardId;
-
         }
 
         private void ReloadContent()
@@ -112,7 +99,7 @@ namespace RSunicard
                     notificatiaonBar.Background = Brushes.LightPink;
                     break;
                 case InfoTypeEnum.Info:
-                    notificatiaonBar.Background = Brushes.LightGoldenrodYellow;
+                    notificatiaonBar.Background = Brushes.LightGray;
                     break;
                 case InfoTypeEnum.Success:
                     notificatiaonBar.Background = Brushes.LightGreen;
@@ -125,19 +112,24 @@ namespace RSunicard
             notificatiaonBar.Visibility = Visibility.Collapsed;
         }
 
-        //TABS SWITCHING SERVICE
+        #region Tab switching section
         private void DashboardClick(object sender, RoutedEventArgs e)
         {
             Dashboard_Show();
         }
         private void Dashboard_Show()
         {
-            StateTab.Background = ManageTab.Background = RaportsTab.Background = Brushes.White;
+            StateTab.Background = ManageTab.Background = Brushes.White;
             DashboardTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
-            StateContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = Visibility.Collapsed;
+            StateContent.Visibility = ManageContent.Visibility = Visibility.Collapsed;
             DashboardContent.Visibility = Visibility.Visible;
             LoadDashboardContent();
+        }
+        private void LoadDashboardContent()
+        {
+            var dashboardItems = Service.GetTodaysEvents();
+            DashboardTable.ItemsSource = dashboardItems;
         }
 
         private void StateClick(object sender, RoutedEventArgs e)
@@ -146,12 +138,17 @@ namespace RSunicard
         }
         private void State_Show()
         {
-            RaportsTab.Background = ManageTab.Background = DashboardTab.Background = Brushes.White;
+            ManageTab.Background = DashboardTab.Background = Brushes.White;
             StateTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
-            DashboardContent.Visibility = ManageContent.Visibility = RaportContent.Visibility = Visibility.Collapsed;
+            DashboardContent.Visibility = ManageContent.Visibility = Visibility.Collapsed;
             StateContent.Visibility = Visibility.Visible;
             LoadStateContent();
+        }
+        private void LoadStateContent()
+        {
+            var companyList = Service.GetCompanyList();
+            StateCompanyList.ItemsSource = companyList;
         }
 
         private void ManageClick(object sender, RoutedEventArgs e)
@@ -160,44 +157,22 @@ namespace RSunicard
         }
         private void Manage_Show()
         {
-            StateTab.Background = DashboardTab.Background = RaportsTab.Background = Brushes.White;
+            StateTab.Background = DashboardTab.Background = Brushes.White;
             ManageTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
 
-
-            StateContent.Visibility = DashboardContent.Visibility = RaportContent.Visibility = Visibility.Collapsed;
+            StateContent.Visibility = DashboardContent.Visibility = Visibility.Collapsed;
             ManageContent.Visibility = Visibility.Visible;
             LoadManageContent();
-
         }
-
-        private void RaportsClick(object sender, RoutedEventArgs e)
+        private void LoadManageContent()
         {
-            Raports_Show();
+            var items = Service.GetCompanySelectList();
+            ManagecompanySelectList.ItemsSource = items;
+            ManagecompanyDeleteSelectList.ItemsSource = items;
+            ManageworkersDeleteSelectList.ItemsSource = Service.GetWorkersSelectList();
         }
-        private void Raports_Show()
-        {
-            StateTab.Background = ManageTab.Background = DashboardTab.Background = Brushes.White;
-            RaportsTab.Background = new SolidColorBrush(Color.FromRgb(190, 230, 253));
-
-            StateContent.Visibility = ManageContent.Visibility = DashboardContent.Visibility = Visibility.Collapsed;
-            RaportContent.Visibility = Visibility.Visible;
-        }
-
-
-        //LOAD CONTENTS
-        // DASHBOARD
-        private void LoadDashboardContent()
-        {
-            var dashboardItems = Service.GetTodaysEvents();
-            DashboardTable.ItemsSource = dashboardItems;
-        }
-
+        #endregion
         //STATE
-        private void LoadStateContent()
-        {
-            var companyList = Service.GetCompanyList();
-            StateCompanyList.ItemsSource = companyList;
-        }
         private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var item = sender as ListViewItem;
@@ -211,16 +186,9 @@ namespace RSunicard
         }
 
         //MENAGE
-        private void LoadManageContent()
-        {
-            var items = Service.GetCompanySelectList();
-            ManagecompanySelectList.ItemsSource = items;
-            ManagecompanyDeleteSelectList.ItemsSource = items;
-            ManageworkersDeleteSelectList.ItemsSource = Service.GetWorkersSelectList();
-        }
         private void AddNewCompanyClick(object sender, RoutedEventArgs e)
         {
-            Service.AddNewCompany(newCompanyName.Text);
+            Service.AddNewCompany(newCompanyName.Text.RemoveDiacritics());
             LoadManageContent();
             ShowNotification(InfoTypeEnum.Success, $"Dodano nową firmę o nazwie: {newCompanyName.Text}");
             newCompanyName.Text = string.Empty;
@@ -230,7 +198,7 @@ namespace RSunicard
         {
             var company = ManagecompanySelectList.SelectedItem as CompanyVM;
             if (company == null) return;
-            Service.AddNewWorker(company.CompanyName, newWorkerName.Text, ManagecardIDinput.Text);
+            Service.AddNewWorker(company.CompanyName.RemoveDiacritics(), newWorkerName.Text.RemoveDiacritics(), ManagecardIDinput.Text);
             LoadManageContent();
             ShowNotification(InfoTypeEnum.Success, $"{newWorkerName.Text} został dodany do firmy {company.CompanyName}");
             newWorkerName.Text = string.Empty;
@@ -260,10 +228,14 @@ namespace RSunicard
         }
 
         //RAPORTS 
-
         private void DailyRaportClick(object sender, RoutedEventArgs e)
         {
-            //todo Serivce.daily...
+            var raport = RaportDaysList.SelectedItem as RaportVM;
+            if (raport == null)
+            {
+                return;
+            }
+            Service.GenerateRaport(raport);
             ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
         }
         private void BackupDatabaseClick(object sender, RoutedEventArgs e)
@@ -280,13 +252,5 @@ namespace RSunicard
         // SETTINGS
 
         string[] ports = SerialPort.GetPortNames();
-    }
-
-    public static class StringExtension
-    {
-        public static string RemoveDiacritics(this string text)
-        {
-            return Encoding.UTF8.GetString(Encoding.GetEncoding("ISO-8859-8").GetBytes(text));
-        }
     }
 }

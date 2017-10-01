@@ -78,6 +78,8 @@
     <Compile Include="Database\Models\DBEvent.cs" />
     <Compile Include="Database\Models\DBWorker.cs" />
     <Compile Include="Database\Models\DBCompany.cs" />
+    <Compile Include="Logic\Extensions\IntExtensions.cs" />
+    <Compile Include="Logic\Extensions\StringExtensions.cs" />
     <Compile Include="Logic\InfoTypeEnum.cs" />
     <Compile Include="Logic\ScanResult.cs" />
     <Compile Include="Logic\Service.cs" />
@@ -89,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Presentation\Models\CompanyDetailsVM.cs" />
     <Compile Include="Presentation\Models\CompanyVM.cs" />
+    <Compile Include="Presentation\Models\RaportVM.cs" />
     <Compile Include="Presentation\Models\EventsVM.cs" />
     <Compile Include="Presentation\Models\WorkerVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -18,12 +18,10 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="DashboardTab" Grid.Column="0" Background="#BEE6FD" Click="DashboardClick" FontFamily="Georgia Italic" FontSize="16">Panel główny</Button>
             <Button x:Name="StateTab" Grid.Column="1" Background="White" Click="StateClick" FontFamily="Georgia Italic" FontSize="16">Stan pracowników</Button>
             <Button x:Name="ManageTab" Grid.Column="2" Background="White" Click="ManageClick" FontFamily="Georgia Italic" FontSize="16">Zarządzaj</Button>
-            <Button x:Name="RaportsTab" Grid.Column="3" Background="White" Click="RaportsClick" FontFamily="Georgia Italic" FontSize="16">Generuj raport</Button>
         </Grid>
         <Grid Grid.Row="2" x:Name="connentionBar" Visibility="Collapsed" Background="LightPink">
             <Grid.ColumnDefinitions>
@@ -89,9 +87,11 @@
                 </Grid>
             </Grid>
 
-            <Grid x:Name="ManageContent" Grid.Row="1" Visibility="Collapsed">
+            <Grid x:Name="ManageContent" Grid.Row="1" Visibility="Visible">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -101,7 +101,9 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label Background="#212121" Foreground="White">Dodaj  firmę</Label>
+                    <StackPanel Background="#212121">
+                        <Label Margin="10,0" FontSize="14" HorizontalAlignment="Center" Foreground="White">Dodaj  firmę</Label>
+                    </StackPanel>
                     <Grid Background="#F0F4C3" Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="120"/>
@@ -115,7 +117,9 @@
                         <TextBox x:Name="newCompanyName" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="10,0"></TextBox>
                         <Button Grid.Row="1" Grid.Column="1" Height="25" Width="120" Margin="10" HorizontalAlignment="Right" Click="AddNewCompanyClick">Dodaj firmę</Button>
                     </Grid>
-                    <Label Background="#212121" Foreground="White" Grid.Row="2">Dodaj pracownika</Label>
+                    <StackPanel Background="#212121" Grid.Row="2">
+                        <Label Margin="10,0" FontSize="14" Background="#212121" HorizontalAlignment="Center" Foreground="White">Dodaj pracownika</Label>
+                    </StackPanel>
                     <Grid Background="#F0F4C3" Grid.Row="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="120"/>
@@ -187,26 +191,32 @@
                         </ComboBox>
                         <Button Grid.Row="1" Grid.Column="1" Height="25" Width="120" Margin="10,0" HorizontalAlignment="Right" Click="DeleteWorkerClick">Usuń pracownika</Button>
                     </Grid>
-
+                    <Label Background="#212121" Foreground="White" Grid.Row="4">Raport dzienny</Label>
+                    <Grid  Background="#F0F4C3" Grid.Row="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ComboBox Grid.Row="0" Name="RaportDaysList" Margin="10">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Value}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Grid.Row="1" Width="150" Height="30" Margin="10" HorizontalAlignment="Right" Click="DailyRaportClick">Generuj raport</Button>
+                    </Grid>
+                    <Label Background="#212121" Foreground="White" Grid.Row="4" Grid.Column="1">Raport dzienny</Label>
+                    <Grid  Background="#F0F4C3" Grid.Row="5" Grid.Column="1">
+                        <Button Grid.Column="1" Margin="30,10" Grid.Row="0" Click="BackupDatabaseClick">Backup bazy danych</Button>
+                    </Grid>
                 </Grid>
                 <GridSplitter Grid.Column="1" Width="1" Background="Black" HorizontalAlignment="Stretch" />
+                
             </Grid>
 
-            <Grid x:Name="RaportContent" Grid.Row="1" Visibility="Visible" >
-                <Grid  Background="#F0F4C3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="100"/>
-                        <RowDefinition Height="100"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Button Background="#212121" Foreground="White" Grid.Column="0" Margin="30,10" Grid.Row="0" Click="DailyRaportClick">Raport dzienny</Button>
-                    <Button Background="#212121" Foreground="White" Grid.Column="1" Margin="30,10" Grid.Row="0" Click="BackupDatabaseClick">Backup bazy danych</Button>
-                </Grid>
-            </Grid>
         </Grid>
     </Grid>
 </Window>

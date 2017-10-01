@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RSunicard.Database.Models;
+using RSunicard.Logic.Extensions;
 using RSunicard.Models;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ namespace RSunicard.Logic
     public static class Service
     {
         // DATABASE SERVICE
-        static readonly string DBpath = @"C:\\RSunicard";
+        static readonly string DBpath = @"C:\\CzytnikKardRFID";
 
 
         public static DBModel GetDBModel()
         {
-            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month.ToTwoDigitString()}{DateTime.Now.Day.ToTwoDigitString()}_database.txt";
             var database = new DBModel();
 
             if (!File.Exists($"{DBpath}\\{fileName}"))
@@ -28,7 +29,7 @@ namespace RSunicard.Logic
             }
             try
             {
-                var dbJson = File.ReadAllText($"{DBpath}\\{fileName}");
+                var dbJson = File.ReadAllText($"{DBpath}\\{fileName}", Encoding.GetEncoding("iso-8859-1"));
                 var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
                 database = dbModel ?? new DBModel();
             }
@@ -39,7 +40,7 @@ namespace RSunicard.Logic
 
         public static void SaveDatabase(DBModel database)
         {
-            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month.ToTwoDigitString()}{DateTime.Now.Day.ToTwoDigitString()}_database.txt";
             if (!File.Exists($"{DBpath}\\{fileName}"))
             {
                 CreateDatebase();
@@ -54,7 +55,11 @@ namespace RSunicard.Logic
 
         public static void CreateDatebase()
         {
-            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month.ToTwoDigitString()}{DateTime.Now.Day.ToTwoDigitString()}_database.txt";
+            if (!Directory.Exists(DBpath))
+            {
+                Directory.CreateDirectory(DBpath);
+            }
             if (File.Exists($"{DBpath}\\{fileName}"))
             {
                 return;
@@ -235,12 +240,28 @@ namespace RSunicard.Logic
             SaveDatabase(dbModel);
         }
 
-        public static void DeleteWorker(string cardId)
+        public static void DeleteWorker(string cardId) //todo do it more pretty
         {
             var dbModel = GetDBModel();
+            var newDbModel = new DBModel
+            {
+                Companies = dbModel.Companies.Select(x => new DBCompany
+                {
+                    CompanyName = x.CompanyName,
+                    Workers = x.Workers.Where(w => w.CardID != cardId).Select(w => new DBWorker
+                    {
+                        CardID = w.CardID,
+                        WorkerName = w.WorkerName,
+                        Events = w.Events.Select(e => new DBEvent
+                        {
+                            EventDate = e.EventDate,
+                            EventType = e.EventType
+                        }).ToList()
+                    }).ToList()
+                }).ToList()
+            };
 
-            var workerToDelete = dbModel.Companies.SelectMany(c => c.Workers).Where(w => w.CardID == cardId);
-            SaveDatabase(dbModel);
+            SaveDatabase(newDbModel);
         }
 
         public static List<CompanyVM> GetCompanySelectList()
@@ -255,6 +276,36 @@ namespace RSunicard.Logic
                     WorkersCount = x.Workers.Count
                 }).ToList();
             };
+            return result;
+        }
+
+
+        public static List<RaportVM> GetRaportsAvailableDays()
+        {
+            var dbModel = GetDBModel();
+            var result = new List<RaportVM>();
+
+            string[] fileEntries = Directory.GetFiles(DBpath);
+            foreach (var item in fileEntries)
+            {
+                try
+                {
+                    var index = DBpath.Length + 1;
+                    var date = new DateTime(int.Parse(item.Substring(index, 4)), int.Parse(item.Substring(index + 4, 2)), int.Parse(item.Substring(index + 6, 2)));
+                    result.Add(new RaportVM
+                    {
+                        RaportDate = date,
+                        Value = date.ToLongDateString(),
+                        FilePath = item
+                    });
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+
             return result;
         }
 
@@ -293,6 +344,23 @@ namespace RSunicard.Logic
             return result;
         }
 
+
+        public static void GenerateRaport(RaportVM raport)
+        {
+            try
+            {
+                string result = string.Empty;
+                var dbJson = File.ReadAllText(raport.FilePath, Encoding.GetEncoding("iso-8859-1"));
+                var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public static ScanResult AddEventToWorker(string cardId)
         {
             if (cardId.Length != 8)
@@ -329,8 +397,5 @@ namespace RSunicard.Logic
                     return new ScanResult { CardIdExisted = false };
             }
         }
-
-
-
     }
 }
