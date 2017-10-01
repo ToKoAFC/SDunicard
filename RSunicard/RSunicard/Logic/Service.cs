@@ -21,18 +21,101 @@ namespace RSunicard.Logic
             var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
             var database = new DBModel();
 
-            if (File.Exists($"{DBpath}\\{fileName}"))
+            if (!File.Exists($"{DBpath}\\{fileName}"))
             {
-                try
-                {
-                    var dbJson = File.ReadAllText($"{DBpath}\\{fileName}");
-                    var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
-                    database = dbModel ?? new DBModel();
-                }
-                catch { }
+                CreateDatebase();
+                return GetDBModel();
             }
+            try
+            {
+                var dbJson = File.ReadAllText($"{DBpath}\\{fileName}");
+                var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
+                database = dbModel ?? new DBModel();
+            }
+            catch { }
             return database;
         }
+
+
+        public static void SaveDatabase(DBModel database)
+        {
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
+            if (!File.Exists($"{DBpath}\\{fileName}"))
+            {
+                CreateDatebase();
+            }
+            try
+            {
+                var json = new JavaScriptSerializer().Serialize(database);
+                File.WriteAllText($"{DBpath}\\{fileName}", json);
+            }
+            catch { }
+        }
+
+        public static void CreateDatebase()
+        {
+            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
+            if (File.Exists($"{DBpath}\\{fileName}"))
+            {
+                return;
+            }
+            string[] fileEntries = Directory.GetFiles(DBpath);
+            var lastDbPath = fileEntries.OrderBy(x => x).ToList().LastOrDefault();
+            if (fileEntries.Length == 0)
+            {
+                File.CreateText($"{DBpath}\\{fileName}");
+                return;
+            }
+            var dbJson = File.ReadAllText(lastDbPath, Encoding.GetEncoding("iso-8859-1"));
+            var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
+            var newdbModel = new DBModel
+            {
+                Companies = dbModel.Companies.Select(x => new DBCompany
+                {
+                    CompanyName = x.CompanyName,
+                    Workers = x.Workers.Select(w => new DBWorker
+                    {
+                        CardID = w.CardID,
+                        WorkerName = w.WorkerName,
+                        Events = new List<DBEvent>()
+                                {
+                                    w.Events.LastOrDefault()
+                                }
+                    }).ToList()
+                }).ToList()
+            };
+            var json = new JavaScriptSerializer().Serialize(newdbModel);
+            using (var sw = File.CreateText($"{DBpath}\\{fileName}"))
+            {
+                sw.WriteLine(json);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public static List<EventVM> GetTodaysEvents()
         {
@@ -76,11 +159,20 @@ namespace RSunicard.Logic
         public static List<WorkerVM> GetPresentWorkers(string companyName)
         {
             var dbModel = GetDBModel();
+            if (companyName == "Lista wszystkich")
+            {
+                return dbModel.Companies.SelectMany(c => c.Workers.Where(w => w.Events.Last().EventType == "Wejscie")).Select(x => new WorkerVM
+                {
+                    CardID = x.CardID,
+                    Name = x.WorkerName
+                }).ToList();
+            }
             var company = dbModel.Companies.Where(c => c.CompanyName == companyName).FirstOrDefault();
             if (company == null)
             {
                 return new List<WorkerVM>();
             }
+
             var workers = company.Workers.Where(w => w.Events.Last().EventType == "Wejscie").Select(w => new WorkerVM
             {
                 CardID = w.CardID,
@@ -102,35 +194,6 @@ namespace RSunicard.Logic
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-        public static void SaveDatabase(DBModel database)
-        {
-            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
-            if (!Directory.Exists(DBpath))
-            {
-                Directory.CreateDirectory(DBpath);
-            }
-            if (!File.Exists($"{DBpath}\\{fileName}"))
-            {
-                File.CreateText($"{DBpath}\\{fileName}");
-            }
-            try
-            {
-                var json = new JavaScriptSerializer().Serialize(database);
-                File.WriteAllText($"{DBpath}\\{fileName}", json);
-            }
-            catch { }
-        }
 
 
         public static void AddNewCompany(string companyName)
@@ -267,47 +330,7 @@ namespace RSunicard.Logic
             }
         }
 
-        public static void CreateDatebase()
-        {
-            var fileName = $"{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}_database.txt";
-            if (!Directory.Exists(DBpath))
-            {
-                Directory.CreateDirectory(DBpath);
-            }
-            if (!File.Exists($"{DBpath}\\{fileName}"))
-            {
-                string[] fileEntries = Directory.GetFiles(DBpath);
-                var lastDbPath = fileEntries.OrderBy(x => x).ToList().LastOrDefault();
-                if (fileEntries.Length > 0)
-                {
-                    var dbJson = File.ReadAllText(lastDbPath, Encoding.GetEncoding("iso-8859-1"));
-                    var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
-                    var newdbModel = new DBModel
-                    {
-                        Companies = dbModel.Companies.Select(x => new DBCompany
-                        {
-                            CompanyName = x.CompanyName,
-                            Workers = x.Workers.Select(w => new DBWorker
-                            {
-                                CardID = w.CardID,
-                                WorkerName = w.WorkerName,
-                                Events = new List<DBEvent>()
-                                {
-                                    w.Events.LastOrDefault()
-                                }
-                            }).ToList()
-                        }).ToList()
-                    };
-                    var json = new JavaScriptSerializer().Serialize(newdbModel);
-                    using (var sw = File.CreateText($"{DBpath}\\{fileName}"))
-                    {
-                        sw.WriteLine(json);
-                    }
-                    //File.WriteAllText($"{DBpath}\\{fileName}", json);
-                }
-                File.CreateText($"{DBpath}\\{fileName}");
-            }
-        }
+
 
     }
 }

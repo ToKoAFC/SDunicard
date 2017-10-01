@@ -44,15 +44,15 @@
             <Button Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Click="DiscardNotification">OK</Button>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid x:Name="DashboardContent" Grid.Row="1" Visibility="Collapsed">
+            <Grid x:Name="DashboardContent" Grid.Row="1" Visibility="Visible">
 
                 <ListView x:Name="DashboardTable" ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Data" Width="125" DisplayMemberBinding="{Binding EventDate}" />
                             <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding CardID}" />
-                            <GridViewColumn Header="Pracownik" Width="100" DisplayMemberBinding="{Binding WorkerName}" />
-                            <GridViewColumn Header="Firma" Width="100" DisplayMemberBinding="{Binding CompanyName}" />
+                            <GridViewColumn Header="Pracownik" Width="200" DisplayMemberBinding="{Binding WorkerName}" />
+                            <GridViewColumn Header="Firma" Width="200" DisplayMemberBinding="{Binding CompanyName}" />
                             <GridViewColumn Header="Zdarzenie" Width="100" DisplayMemberBinding="{Binding EventType}" />
                         </GridView>
                     </ListView.View>
@@ -89,7 +89,7 @@
                 </Grid>
             </StackPanel>
 
-            <StackPanel x:Name="ManageContent" Grid.Row="1" Visibility="Visible">
+            <StackPanel x:Name="ManageContent" Grid.Row="1" Visibility="Collapsed">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
