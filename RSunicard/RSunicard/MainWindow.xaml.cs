@@ -21,8 +21,13 @@ namespace RSunicard
         {
             InitializeComponent();
             ConnectToCOM();
-            SerialPortsList.ItemsSource = SerialPort.GetPortNames();
             Dashboard_Show();
+        }
+        private void CheckSerialPortConnection()
+        {
+            SerialPortsList.ItemsSource = SerialPort.GetPortNames();
+            if (sp.IsOpen) return;
+            connentionBar.Visibility = Visibility.Visible;
         }
 
         private void ConnectToCOM()
@@ -108,6 +113,7 @@ namespace RSunicard
         }
         private void DiscardNotification(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             notificatiaonBar.Visibility = Visibility.Collapsed;
         }
 
@@ -127,6 +133,7 @@ namespace RSunicard
         }
         private void LoadDashboardContent()
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var dashboardItems = Service.GetTodaysEvents();
             DashboardTable.ItemsSource = dashboardItems;
         }
@@ -146,6 +153,7 @@ namespace RSunicard
         }
         private void LoadStateContent()
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var companyList = Service.GetCompanyList();
             StateCompanyList.ItemsSource = companyList;
         }
@@ -165,6 +173,7 @@ namespace RSunicard
         }
         private void LoadManageContent()
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var items = Service.GetCompanySelectList();
             ManagecompanySelectList.ItemsSource = items;
             var raportdays = Service.GetRaportsAvailableDays();
@@ -178,6 +187,7 @@ namespace RSunicard
         //STATE
         private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var item = sender as ListViewItem;
             var company = item.Content as CompanyVM;
             if (item == null || company == null)
@@ -191,6 +201,7 @@ namespace RSunicard
         //MENAGE
         private void AddNewCompanyClick(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             Service.AddNewCompany(newCompanyName.Text.RemoveDiacritics());
             LoadManageContent();
             ShowNotification(InfoTypeEnum.Success, $"Dodano nową firmę o nazwie: {newCompanyName.Text}");
@@ -199,6 +210,7 @@ namespace RSunicard
 
         private void AddNewWorkerlick(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var company = ManagecompanySelectList.SelectedItem as CompanyVM;
             if (company == null) return;
             Service.AddNewWorker(company.CompanyName.RemoveDiacritics(), newWorkerName.Text.RemoveDiacritics(), ManagecardIDinput.Text);
@@ -210,6 +222,7 @@ namespace RSunicard
 
         private void DeleteCompanyClick(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var company = ManagecompanyDeleteSelectList.SelectedItem as CompanyVM;
             if (company == null) return;
             Service.DeleteCompany(company.CompanyName);
@@ -221,6 +234,7 @@ namespace RSunicard
 
         private void DeleteWorkerClick(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var worker = ManageworkersDeleteSelectList.SelectedItem as WorkerVM;
             if (worker == null) return;
             Service.DeleteWorker(worker.CardID);
@@ -233,6 +247,7 @@ namespace RSunicard
         //RAPORTS 
         private void DailyRaportClick(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var raport = RaportDaysList.SelectedItem as RaportVM;
             if (raport == null)
             {
@@ -243,6 +258,7 @@ namespace RSunicard
         }
         private void DailyCompanyRaportClick(object sender, RoutedEventArgs e)
         {
+            Dispatcher.BeginInvoke((Action)(() => CheckSerialPortConnection()));
             var raport = RaportCompanyDayList.SelectedItem as RaportVM;
             var company = RaportCompanyList.SelectedItem as CompanyVM;
             if (raport == null || company == null)
@@ -252,9 +268,5 @@ namespace RSunicard
             Service.GenerateRaportForCompany(raport, company.CompanyName);
             ShowNotification(InfoTypeEnum.Success, $"Utworzono raport z dnia {DateTime.Now.ToShortDateString()}, dla firmy{company.CompanyName}.");
         }
-
-        // SETTINGS
-
-        string[] ports = SerialPort.GetPortNames();
     }
 }
