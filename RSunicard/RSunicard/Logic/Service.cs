@@ -353,10 +353,14 @@ namespace RSunicard.Logic
                 string result = string.Empty;
                 var dbJson = File.ReadAllText(raport.FilePath, Encoding.GetEncoding("iso-8859-1"));
                 var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
-                foreach (var company in dbModel.Companies)
+                var items = dbModel.Companies.Select(c => c.Workers.Select(w => w.Events.Where(e => e.EventDate == raport.RaportDate).Select(e => new RaportItemVM
                 {
-
-                }
+                    CompanyName = c.CompanyName,
+                    EventDate = e.EventDate,
+                    EventType = e.EventType,
+                    WorkerCardID = w.CardID,
+                    WorkerName = w.WorkerName
+                }))).ToList();
             }
             catch (Exception)
             {
