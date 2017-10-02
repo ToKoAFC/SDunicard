@@ -346,12 +346,11 @@ namespace RSunicard.Logic
             return result;
         }
 
-
         public static void GenerateRaport(RaportVM raport)
         {
             try
             {
-                string result = string.Empty;
+                string result = $"Raport z dnia: {raport.RaportDate.ToLongDateString()}" + Environment.NewLine;
                 var dbJson = File.ReadAllText(raport.FilePath, Encoding.GetEncoding("iso-8859-1"));
                 var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
                 dbModel.Companies.SelectMany(c => c.Workers.SelectMany(w => w.Events.Where(e => e.EventDate.Date == raport.RaportDate.Date).Select(e => new RaportItemVM
@@ -365,12 +364,43 @@ namespace RSunicard.Logic
                 {
                     result += $"{r.EventDate.ToShortTimeString()} {r.EventType} | {r.WorkerName}, {r.CompanyName}, numer karty: {r.WorkerCardID}" + Environment.NewLine;
                 });
-                string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDoc‌​uments), "Raporty czytnika RFID");
+                string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDoc‌​uments), "Raporty czytnika RFID", "Raporty dzienne");
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
                 var fileName = $"Raport z dnia {raport.RaportDate.ToString("yyyy_MM_dd")}.txt";
+                File.WriteAllText($"{path}\\{fileName}", result);
+                Process.Start($"{path}\\{fileName}");
+            }
+            catch (Exception) { }
+
+        }
+
+
+        public static void GenerateRaportForCompany(RaportVM raport, string companyName)
+        {
+            try
+            {
+                string result = $"Raport dla firmy: {companyName} z dnia: {raport.RaportDate.ToLongDateString()}" + Environment.NewLine;
+                var dbJson = File.ReadAllText(raport.FilePath, Encoding.GetEncoding("iso-8859-1"));
+                var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
+                dbModel.Companies.Where(c => c.CompanyName == companyName).SelectMany(c => c.Workers.SelectMany(w => w.Events.Where(e => e.EventDate.Date == raport.RaportDate.Date).Select(e => new RaportItemVM
+                {
+                    EventDate = e.EventDate,
+                    EventType = e.EventType,
+                    WorkerCardID = w.CardID,
+                    WorkerName = w.WorkerName
+                }))).OrderBy(r => r.EventDate).ToList().ForEach(r =>
+                {
+                    result += $"{r.EventDate.ToShortTimeString()} {r.EventType} | {r.WorkerName}, numer karty: {r.WorkerCardID}" + Environment.NewLine;
+                });
+                string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDoc‌​uments), "Raporty czytnika RFID", "Raporty dzienne dla firm");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                var fileName = $"{companyName} z dnia {raport.RaportDate.ToString("yyyy_MM_dd")}.txt";
                 File.WriteAllText($"{path}\\{fileName}", result);
                 Process.Start($"{path}\\{fileName}");
             }

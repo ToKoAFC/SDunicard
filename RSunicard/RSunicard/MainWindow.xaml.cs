@@ -22,7 +22,6 @@ namespace RSunicard
             InitializeComponent();
             ConnectToCOM();
             SerialPortsList.ItemsSource = SerialPort.GetPortNames();
-            RaportDaysList.ItemsSource = Service.GetRaportsAvailableDays();
             Dashboard_Show();
         }
 
@@ -168,6 +167,10 @@ namespace RSunicard
         {
             var items = Service.GetCompanySelectList();
             ManagecompanySelectList.ItemsSource = items;
+            var raportdays = Service.GetRaportsAvailableDays();
+            RaportDaysList.ItemsSource = raportdays;
+            RaportCompanyDayList.ItemsSource = raportdays;
+            RaportCompanyList.ItemsSource = items;
             ManagecompanyDeleteSelectList.ItemsSource = items;
             ManageworkersDeleteSelectList.ItemsSource = Service.GetWorkersSelectList();
         }
@@ -236,17 +239,18 @@ namespace RSunicard
                 return;
             }
             Service.GenerateRaport(raport);
-            ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
+            ShowNotification(InfoTypeEnum.Success, $"Utworzono raport z dnia {DateTime.Now.ToShortDateString()}.");
         }
-        private void BackupDatabaseClick(object sender, RoutedEventArgs e)
+        private void DailyCompanyRaportClick(object sender, RoutedEventArgs e)
         {
-            //todo Serivce.backup...
-            ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
-        }
-        private void CurrentRaportClick(object sender, RoutedEventArgs e)
-        {
-            //todo Serivce.current...
-            ShowNotification(InfoTypeEnum.Success, $"Utworzono backup bazy danych. Data :{DateTime.Now.ToShortDateString()}");
+            var raport = RaportCompanyDayList.SelectedItem as RaportVM;
+            var company = RaportCompanyList.SelectedItem as CompanyVM;
+            if (raport == null || company == null)
+            {
+                return;
+            }
+            Service.GenerateRaportForCompany(raport, company.CompanyName);
+            ShowNotification(InfoTypeEnum.Success, $"Utworzono raport z dnia {DateTime.Now.ToShortDateString()}, dla firmy{company.CompanyName}.");
         }
 
         // SETTINGS

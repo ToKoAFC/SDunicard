@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RSunicard"
         mc:Ignorable="d"
-        Title="Czytnik kard RFID" Height="600" Width="800" ResizeMode="NoResize">
+        Title="Czytnik kard RFID" Height="650" Width="800" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -215,7 +215,36 @@
                     </Grid>
                     <Label Background="#212121" Foreground="White" Grid.Row="4" Grid.Column="1">Raport dzienny dla firmy</Label>
                     <Grid  Background="#F0F4C3" Grid.Row="5" Grid.Column="1">
-                        <Button Grid.Column="1"  Grid.Row="0" Click="BackupDatabaseClick">Backup bazy danych</Button>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label VerticalAlignment="Center" Margin="5">Firma:</Label>
+                        <ComboBox Grid.Row="0" Grid.Column="1" Name="RaportCompanyList" Margin="10">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding CompanyName}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Label Grid.Row="1" VerticalAlignment="Center" Margin="5">Data:</Label>
+                        <ComboBox Grid.Row="1" Grid.Column="1" Name="RaportCompanyDayList" Margin="10">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Value}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Grid.Row="2" Grid.Column="1" Width="150" Height="30" Margin="10" HorizontalAlignment="Right" Click="DailyCompanyRaportClick">Generuj raport</Button>
                     </Grid>
                 </Grid>
                 <GridSplitter Grid.Column="1" Width="1" Background="Black" HorizontalAlignment="Stretch" />
