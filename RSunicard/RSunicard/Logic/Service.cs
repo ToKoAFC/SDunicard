@@ -4,6 +4,7 @@ using RSunicard.Logic.Extensions;
 using RSunicard.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -353,20 +354,28 @@ namespace RSunicard.Logic
                 string result = string.Empty;
                 var dbJson = File.ReadAllText(raport.FilePath, Encoding.GetEncoding("iso-8859-1"));
                 var dbModel = JsonConvert.DeserializeObject<DBModel>(dbJson);
-                var items = dbModel.Companies.Select(c => c.Workers.Select(w => w.Events.Where(e => e.EventDate == raport.RaportDate).Select(e => new RaportItemVM
+                dbModel.Companies.SelectMany(c => c.Workers.SelectMany(w => w.Events.Where(e => e.EventDate.Date == raport.RaportDate.Date).Select(e => new RaportItemVM
                 {
                     CompanyName = c.CompanyName,
                     EventDate = e.EventDate,
                     EventType = e.EventType,
                     WorkerCardID = w.CardID,
                     WorkerName = w.WorkerName
-                }))).ToList();
+                }))).OrderBy(r => r.EventDate).ToList().ForEach(r =>
+                {
+                    result += $"{r.EventDate.ToShortTimeString()} {r.EventType} | {r.WorkerName}, {r.CompanyName}, numer karty: {r.WorkerCardID}" + Environment.NewLine;
+                });
+                string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDoc‌​uments), "Raporty czytnika RFID");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                var fileName = $"Raport z dnia {raport.RaportDate.ToString("yyyy_MM_dd")}.txt";
+                File.WriteAllText($"{path}\\{fileName}", result);
+                Process.Start($"{path}\\{fileName}");
             }
-            catch (Exception)
-            {
+            catch (Exception) { }
 
-                throw;
-            }
         }
 
         public static ScanResult AddEventToWorker(string cardId)
