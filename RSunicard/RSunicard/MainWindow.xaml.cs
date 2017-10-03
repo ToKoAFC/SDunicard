@@ -93,6 +93,11 @@ namespace RSunicard
             ConnectToCOM();
         }
 
+        private void RefreshCOMPortsClick(object sender, RoutedEventArgs e)
+        {
+            SerialPortsList.ItemsSource = SerialPort.GetPortNames();
+        }        
+
         //NOTIFICATION
         private void ShowNotification(InfoTypeEnum type, string message)
         {
